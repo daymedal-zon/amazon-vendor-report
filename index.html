@@ -511,9 +511,9 @@
             </div>
 
             <div class="metric-card">
-                <h3>Ship Rate %</h3>
-                <div class="metric-value" id="shipRate">0%</div>
-                <div class="metric-change" id="shipRateChange"></div>
+                <h3>90+ Days Inventory %</h3>
+                <div class="metric-value" id="aged90Percent">0%</div>
+                <div class="metric-change" id="aged90PercentChange"></div>
             </div>
 
             <div class="chart-container">
@@ -561,7 +561,7 @@
                                 <th>Conversion Rate</th>
                                 <th>Daily Sales</th>
                                 <th>Shipped Units</th>
-                                <th>Ship Rate %</th>
+                                <th>90+ Days Inventory %</th>
                                 <th>Lead Time (days)</th>
                                 <th>Net PPM %</th>
                             </tr>
@@ -845,7 +845,9 @@
                         dailySales,
                         netPPM,
                         leadTime,
-                        shipRate,
+                        aged90Percent,
+                        sellableUnits,
+                        aged90Units,
                         orderedRevenueYoY,
                         orderedUnitsYoY,
                         pageViewsYoY,
@@ -870,7 +872,20 @@
                 if (!value || value === '' || value === null) return null;
                 const num = parseFloat(value);
                 if (isNaN(num)) return null;
-                return Math.abs(num) <= 1 ? num * 100 : num;
+                
+                // FIXED: Amazon provides percentages in different formats
+                // Values like -0.1575 = -15.75%, but 16.4304 = 16.43% (already a percentage)
+                // If absolute value is ≤ 1, it's decimal format, multiply by 100
+                // If > 1 but < 100, it's likely already a percentage
+                // If ≥ 100, it's definitely a percentage (like 1643.04% growth)
+                
+                if (Math.abs(num) <= 1) {
+                    return num * 100; // Convert decimal to percentage
+                } else if (Math.abs(num) < 100) {
+                    return num; // Already a percentage
+                } else {
+                    return num; // Large percentage values
+                }
             }
 
             formatYoY(value) {
@@ -891,7 +906,7 @@
                 this.updateElement('netPPM', totals.netPPM.toFixed(1) + '%');
                 this.updateElement('vendorLeadTime', totals.leadTime.toFixed(1) + ' days');
                 this.updateElement('shippedUnits', totals.shippedUnits.toLocaleString());
-                this.updateElement('shipRate', totals.shipRate.toFixed(1) + '%');
+                this.updateElement('aged90Percent', totals.aged90Percent.toFixed(1) + '%');
 
                 this.updateElementHTML('orderedUnitsChange', this.formatYoY(totals.orderedUnitsYoY));
                 this.updateElementHTML('orderedRevenueChange', this.formatYoY(totals.orderedRevenueYoY));
@@ -917,6 +932,8 @@
                     dailySales: 0,
                     shippedUnits: 0,
                     leadTime: 0,
+                    sellableUnits: 0,
+                    aged90Units: 0,
                     orderedUnitsYoY: null,
                     orderedRevenueYoY: null,
                     pageViewsYoY: null,
@@ -934,35 +951,40 @@
                     totals.pageViews += item.pageViews;
                     totals.dailySales += item.dailySales;
                     totals.shippedUnits += item.dispatchedUnits;
+                    totals.sellableUnits += item.sellableUnits || 0;
+                    totals.aged90Units += item.aged90Units || 0;
                     
                     if (item.leadTime > 0 && item.orderedRevenue > 0) {
                         leadTimeSum += item.leadTime * item.orderedRevenue;
                         leadTimeWeight += item.orderedRevenue;
                     }
 
-                    if (item.orderedUnitsYoY !== null && item.orderedRevenue > 0) {
-                        yoyData.units += item.orderedUnitsYoY * item.orderedRevenue;
-                        yoyCount.units += item.orderedRevenue;
+                    // FIXED: Use simple averaging instead of revenue-weighted for YoY
+                    // This prevents extreme values from skewing the results
+                    if (item.orderedUnitsYoY !== null && Math.abs(item.orderedUnitsYoY) < 1000) {
+                        yoyData.units += item.orderedUnitsYoY;
+                        yoyCount.units += 1;
                     }
-                    if (item.orderedRevenueYoY !== null && item.orderedRevenue > 0) {
-                        yoyData.revenue += item.orderedRevenueYoY * item.orderedRevenue;
-                        yoyCount.revenue += item.orderedRevenue;
+                    if (item.orderedRevenueYoY !== null && Math.abs(item.orderedRevenueYoY) < 1000) {
+                        yoyData.revenue += item.orderedRevenueYoY;
+                        yoyCount.revenue += 1;
                     }
-                    if (item.pageViewsYoY !== null && item.pageViews > 0) {
-                        yoyData.pageViews += item.pageViewsYoY * item.pageViews;
-                        yoyCount.pageViews += item.pageViews;
+                    if (item.pageViewsYoY !== null && Math.abs(item.pageViewsYoY) < 1000) {
+                        yoyData.pageViews += item.pageViewsYoY;
+                        yoyCount.pageViews += 1;
                     }
-                    if (item.leadTimeYoY !== null && item.orderedRevenue > 0) {
-                        yoyData.leadTime += item.leadTimeYoY * item.orderedRevenue;
-                        yoyCount.leadTime += item.orderedRevenue;
+                    if (item.leadTimeYoY !== null && Math.abs(item.leadTimeYoY) < 1000) {
+                        yoyData.leadTime += item.leadTimeYoY;
+                        yoyCount.leadTime += 1;
                     }
                 });
 
                 totals.conversionRate = totals.pageViews > 0 ? (totals.orderedUnits / totals.pageViews) * 100 : 0;
                 totals.netPPM = this.calculateNetPPM();
-                totals.shipRate = totals.orderedUnits > 0 ? (totals.shippedUnits / totals.orderedUnits) * 100 : 0;
+                totals.aged90Percent = totals.sellableUnits > 0 ? (totals.aged90Units / totals.sellableUnits) * 100 : 0;
                 totals.leadTime = leadTimeWeight > 0 ? leadTimeSum / leadTimeWeight : 0;
 
+                // FIXED: Simple averaging for YoY to prevent extreme skewing
                 totals.orderedUnitsYoY = yoyCount.units > 0 ? yoyData.units / yoyCount.units : null;
                 totals.orderedRevenueYoY = yoyCount.revenue > 0 ? yoyData.revenue / yoyCount.revenue : null;
                 totals.pageViewsYoY = yoyCount.pageViews > 0 ? yoyData.pageViews / yoyCount.pageViews : null;
@@ -1156,7 +1178,7 @@
                         item.conversionRate.toFixed(2) + '%',
                         '£' + item.dailySales.toFixed(2),
                         item.dispatchedUnits.toLocaleString(),
-                        item.shipRate.toFixed(1) + '%',
+                        item.aged90Percent.toFixed(1) + '%',
                         item.leadTime.toFixed(1),
                         item.netPPM.toFixed(1) + '%'
                     ];
@@ -1201,7 +1223,7 @@
                         'Conversion Rate %': item.conversionRate.toFixed(2),
                         'Daily Sales': item.dailySales.toFixed(2),
                         'Shipped Units': item.dispatchedUnits,
-                        'Ship Rate %': item.shipRate.toFixed(1),
+                        '90+ Days Inventory %': item.aged90Percent.toFixed(1),
                         'Lead Time Days': item.leadTime.toFixed(1),
                         'Net PPM %': item.netPPM.toFixed(1)
                     }));
@@ -1220,7 +1242,7 @@
             exportCSV() {
                 try {
                     const headers = ['ASIN', 'Product Title', 'Ordered Units', 'Ordered Revenue', 'Page Views', 
-                                   'Conversion Rate %', 'Daily Sales', 'Shipped Units', 'Ship Rate %', 'Lead Time Days', 'Net PPM %'];
+                                   'Conversion Rate %', 'Daily Sales', 'Shipped Units', '90+ Days Inventory %', 'Lead Time Days', 'Net PPM %'];
                     
                     const csvContent = [headers].concat(
                         this.processedData.map(item => [
@@ -1232,7 +1254,7 @@
                             item.conversionRate.toFixed(2),
                             item.dailySales.toFixed(2),
                             item.dispatchedUnits,
-                            item.shipRate.toFixed(1),
+                            item.aged90Percent.toFixed(1),
                             item.leadTime.toFixed(1),
                             item.netPPM.toFixed(1)
                         ])
