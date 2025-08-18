@@ -844,19 +844,34 @@
                 const merged = [];
                 
                 try {
+                    console.log('Starting data merge process...');
+                    
+                    // Validate input data exists
+                    if (!this.salesData || this.salesData.length === 0) {
+                        throw new Error('Sales data is empty or undefined');
+                    }
+                    if (!this.trafficData || this.trafficData.length === 0) {
+                        throw new Error('Traffic data is empty or undefined');
+                    }
+                    if (!this.inventoryData || this.inventoryData.length === 0) {
+                        throw new Error('Inventory data is empty or undefined');
+                    }
+                    
                     const trafficMap = new Map();
                     this.trafficData.forEach(row => {
-                        if (row.ASIN) trafficMap.set(String(row.ASIN), row);
+                        if (row && row.ASIN) trafficMap.set(String(row.ASIN), row);
                     });
 
                     const inventoryMap = new Map();
                     this.inventoryData.forEach(row => {
-                        if (row.ASIN) inventoryMap.set(String(row.ASIN), row);
+                        if (row && row.ASIN) inventoryMap.set(String(row.ASIN), row);
                     });
 
-                    this.salesData.forEach(salesRow => {
+                    console.log(`Processing ${this.salesData.length} sales rows...`);
+                    
+                    this.salesData.forEach((salesRow, index) => {
                         try {
-                            if (!salesRow.ASIN) return;
+                            if (!salesRow || !salesRow.ASIN) return;
 
                             const asin = String(salesRow.ASIN);
                             const trafficRow = trafficMap.get(asin) || {};
@@ -1009,7 +1024,7 @@
                     orderedUnits: [],
                     orderedRevenue: [],
                     pageViews: [],
-                    leadTime: [],
+                    vendorLeadTime: [],
                     aged90: []
                 };
 
@@ -1063,7 +1078,7 @@
                     pageViewsYoY: this.calculateAverage(yoyValues.pageViews),
                     conversionRateYoY: this.calculateAverage(yoyValues.orderedUnits), // Approximation
                     netPPMYoY: this.calculateAverage(yoyValues.orderedRevenue), // Approximation
-                    leadTimeYoY: this.calculateAverage(yoyValues.leadTime),
+                    leadTimeYoY: this.calculateAverage(yoyValues.vendorLeadTime),
                     aged90YoY: this.calculateAverage(yoyValues.aged90)
                 };
             }
