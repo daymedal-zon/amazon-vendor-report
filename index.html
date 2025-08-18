@@ -586,7 +586,7 @@
                 this.inventoryData = [];
                 this.processedData = [];
                 this.charts = {};
-                this.daysInMonth = 31;
+                this.daysInPeriod = 42; // Default: will be calculated from filename
                 this.maxFileSize = 50 * 1024 * 1024;
                 this.init();
             }
@@ -667,6 +667,9 @@
                     this.validateFile(file);
                     this.updateFileStatus(type, 'active', 'Processing...');
                     
+                    // Extract date range from filename to calculate period length
+                    this.calculatePeriodFromFilename(file.name);
+                    
                     if (file.name.match(/\.(xlsx|xls)$/i)) {
                         this.processExcel(file, type);
                     } else {
@@ -675,6 +678,39 @@
                 } catch (error) {
                     this.updateFileStatus(type, 'error', error.message);
                     this.showError('Error: ' + error.message);
+                }
+            }
+
+            calculatePeriodFromFilename(filename) {
+                try {
+                    // Extract dates from filename pattern: *_01072025_31072025.* or *_01-07-2025_12-08-2025.*
+                    const dateMatch = filename.match(/(\d{2}[\-]?\d{2}[\-]?\d{4})_(\d{2}[\-]?\d{2}[\-]?\d{4})/);
+                    
+                    if (dateMatch) {
+                        const startDateStr = dateMatch[1].replace(/[\-]/g, '');
+                        const endDateStr = dateMatch[2].replace(/[\-]/g, '');
+                        
+                        // Parse dates: DDMMYYYY format
+                        const startDay = parseInt(startDateStr.substring(0, 2));
+                        const startMonth = parseInt(startDateStr.substring(2, 4)) - 1; // JS months are 0-based
+                        const startYear = parseInt(startDateStr.substring(4, 8));
+                        
+                        const endDay = parseInt(endDateStr.substring(0, 2));
+                        const endMonth = parseInt(endDateStr.substring(2, 4)) - 1;
+                        const endYear = parseInt(endDateStr.substring(4, 8));
+                        
+                        const startDate = new Date(startYear, startMonth, startDay);
+                        const endDate = new Date(endYear, endMonth, endDay);
+                        
+                        const diffTime = Math.abs(endDate - startDate);
+                        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; // +1 to include both start and end dates
+                        
+                        this.daysInPeriod = diffDays;
+                        console.log(`Calculated period: ${diffDays} days (${startDay}/${startMonth+1}/${startYear} to ${endDay}/${endMonth+1}/${endYear})`);
+                    }
+                } catch (error) {
+                    console.warn('Could not parse date from filename, using default 42 days:', error);
+                    this.daysInPeriod = 42;
                 }
             }
 
@@ -796,13 +832,11 @@
                 const num = parseFloat(value);
                 if (isNaN(num)) return null;
                 
-                // Enhanced YoY parsing logic
+                // FIXED: Amazon YoY format is mixed - decimals for small changes, percentages for large changes
                 if (Math.abs(num) <= 1) {
-                    return num * 100; // Decimal format
-                } else if (Math.abs(num) < 100) {
-                    return num; // Already percentage format
+                    return num * 100; // Convert decimal to percentage: -0.1575 → -15.75%
                 } else {
-                    return num; // Large percentage or outlier
+                    return num; // Already in percentage format: 16.4304 → 16.43%
                 }
             }
 
@@ -839,6 +873,14 @@
                             const pageViews = this.parseNum(trafficRow['Featured offer page views']) || 0;
                             const leadTime = this.parseNum(inventoryRow['Overall Vendor Lead Time (days)']) || 0;
                             
+                            // Check multiple possible column name variations for inventory data
+                            const vendorLeadTime = this.parseNum(
+                                inventoryRow['Overall Vendor Lead Time (days)'] || 
+                                inventoryRow['Vendor Lead Time (days)'] ||
+                                inventoryRow['Lead Time (days)'] ||
+                                0
+                            );
+                            
                             // Check multiple possible column name variations for sellable units
                             const sellableUnits = this.parseNum(
                                 inventoryRow['Sellable On Hand Units'] || 
@@ -855,17 +897,34 @@
                                 0
                             );
                             
+                            // Validate inventory calculations
+                            if (sellableUnits < 0 || aged90Units < 0 || vendorLeadTime < 0) {
+                                console.warn(`Invalid inventory data for ASIN ${asin}:`, {sellableUnits, aged90Units, vendorLeadTime});
+                            }
+                            
+                            // Calculate metrics using proper variable names
                             const conversionRate = pageViews > 0 ? (orderedUnits / pageViews) * 100 : 0;
-                            const dailySales = orderedRevenue / this.daysInMonth;
+                            const dailySales = orderedRevenue / this.daysInPeriod;
                             const netPPM = dispatchedRevenue > 0 ? ((dispatchedRevenue - dispatchedCOGS) / dispatchedRevenue) * 100 : 0;
                             const aged90Percent = sellableUnits > 0 ? (aged90Units / sellableUnits) * 100 : 0;
                             
-                            // YoY calculations
+                            // Validate calculated metrics for sanity
+                            if (conversionRate > 100) {
+                                console.warn(`Unrealistic conversion rate for ASIN ${asin}: ${conversionRate.toFixed(1)}%`);
+                            }
+                            if (netPPM < -100 || netPPM > 100) {
+                                console.warn(`Extreme Net PPM for ASIN ${asin}: ${netPPM.toFixed(1)}%`);
+                            }
+                            if (aged90Percent > 100) {
+                                console.warn(`Invalid aged inventory % for ASIN ${asin}: ${aged90Percent.toFixed(1)}%`);
+                            }
+                            
+                            // YoY calculations with proper variable naming
                             const orderedRevenueYoY = this.parseYoY(salesRow['Ordered Revenue – Same Period Last Year (%)']);
                             const orderedUnitsYoY = this.parseYoY(salesRow['Ordered Units – Same Period Last Year (%)']);
                             const dispatchedUnitsYoY = this.parseYoY(salesRow['Dispatched Units – Same Period Last Year (%)']);
                             const pageViewsYoY = this.parseYoY(trafficRow['Featured offer page views – Same Period Last Year (%)']);
-                            const leadTimeYoY = this.parseYoY(inventoryRow['Overall Vendor Lead Time (days) – Same Period Last Year (%)']);
+                            const vendorLeadTimeYoY = this.parseYoY(inventoryRow['Overall Vendor Lead Time (days) – Same Period Last Year (%)']);
                             const aged90YoY = this.parseYoY(inventoryRow['Aged 90+ Days Sellable Units – Same Period Last Year (%)']);
 
                             merged.push({
@@ -880,7 +939,7 @@
                                 conversionRate: conversionRate,
                                 dailySales: dailySales,
                                 netPPM: netPPM,
-                                leadTime: leadTime,
+                                leadTime: vendorLeadTime,
                                 sellableUnits: sellableUnits,
                                 aged90Units: aged90Units,
                                 aged90Percent: aged90Percent,
@@ -888,7 +947,7 @@
                                 orderedUnitsYoY: orderedUnitsYoY,
                                 dispatchedUnitsYoY: dispatchedUnitsYoY,
                                 pageViewsYoY: pageViewsYoY,
-                                leadTimeYoY: leadTimeYoY,
+                                leadTimeYoY: vendorLeadTimeYoY,
                                 aged90YoY: aged90YoY
                             });
                         } catch (rowError) {
@@ -982,7 +1041,7 @@
                         yoyValues.pageViews.push(item.pageViewsYoY);
                     }
                     if (item.leadTimeYoY !== null && Math.abs(item.leadTimeYoY) < 1000) {
-                        yoyValues.leadTime.push(item.leadTimeYoY);
+                        yoyValues.vendorLeadTime.push(item.leadTimeYoY);
                     }
                     if (item.aged90YoY !== null && Math.abs(item.aged90YoY) < 1000) {
                         yoyValues.aged90.push(item.aged90YoY);
