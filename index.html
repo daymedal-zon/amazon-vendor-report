@@ -505,12 +505,6 @@
             </div>
 
             <div class="metric-card">
-                <h3>Shipped Units</h3>
-                <div class="metric-value" id="shippedUnits">0</div>
-                <div class="metric-change" id="shippedUnitsChange"></div>
-            </div>
-
-            <div class="metric-card">
                 <h3>90+ Days Inventory %</h3>
                 <div class="metric-value" id="aged90Percent">0%</div>
                 <div class="metric-change" id="aged90PercentChange"></div>
@@ -536,7 +530,7 @@
                     </div>
                     <div class="summary-card">
                         <h4>💰 Revenue Recovery Opportunities</h4>
-                        <p>High-revenue products (£1k+) with below-average conversion and significant traffic</p>
+                        <p>High-revenue products with optimization potential</p>
                         <ul class="summary-list" id="revenueRecoveryList"></ul>
                     </div>
                     <div class="summary-card">
@@ -548,7 +542,8 @@
             </div>
 
             <div class="data-table">
-                <h3>Product Performance Summary</h3>
+                <h3>Product Performance Summary (Top 50)</h3>
+                <p style="color: #666; margin-bottom: 15px;">Limited to top 50 products by revenue. Export for complete dataset.</p>
                 <div style="overflow-x: auto;">
                     <table id="performanceTable">
                         <thead>
@@ -560,9 +555,8 @@
                                 <th>Page Views</th>
                                 <th>Conversion Rate</th>
                                 <th>Daily Sales</th>
-                                <th>Shipped Units</th>
-                                <th>90+ Days Inventory %</th>
                                 <th>Lead Time (days)</th>
+                                <th>90+ Days Inventory %</th>
                                 <th>Net PPM %</th>
                             </tr>
                         </thead>
@@ -577,11 +571,10 @@
             <h3>Export Your Report</h3>
             <button class="export-btn" id="exportExcel">📊 Export to Excel</button>
             <button class="export-btn" id="exportCSV">📋 Export to CSV</button>
-            <button class="export-btn" id="exportPDF">📄 Export to PDF</button>
         </div>
 
         <div class="version-info">
-            v1.01 | Zon Analytics
+            v1.02 | Zon Analytics
         </div>
     </div>
 
@@ -601,7 +594,7 @@
             init() {
                 try {
                     this.bindEvents();
-                    console.log('Dashboard initialized');
+                    console.log('Dashboard initialized successfully');
                 } catch (error) {
                     console.error('Init failed:', error);
                     this.showError('Failed to initialize dashboard');
@@ -614,10 +607,10 @@
                 const inventoryFile = document.getElementById('inventoryFile');
                 const processBtn = document.getElementById('processBtn');
 
-                salesFile.addEventListener('change', (e) => this.handleFile(e, 'sales'));
-                trafficFile.addEventListener('change', (e) => this.handleFile(e, 'traffic'));
-                inventoryFile.addEventListener('change', (e) => this.handleFile(e, 'inventory'));
-                processBtn.addEventListener('click', () => this.processData());
+                if (salesFile) salesFile.addEventListener('change', (e) => this.handleFile(e, 'sales'));
+                if (trafficFile) trafficFile.addEventListener('change', (e) => this.handleFile(e, 'traffic'));
+                if (inventoryFile) inventoryFile.addEventListener('change', (e) => this.handleFile(e, 'inventory'));
+                if (processBtn) processBtn.addEventListener('click', () => this.processData());
             }
 
             bindExportEvents() {
@@ -787,141 +780,142 @@
                     } catch (error) {
                         if (loading) loading.style.display = 'none';
                         this.showError('Processing failed: ' + error.message);
+                        console.error('Processing error:', error);
                     }
                 }, 100);
+            }
+
+            parseNum(value) {
+                if (!value) return 0;
+                const str = String(value).replace(/[,£$]/g, '');
+                return parseFloat(str) || 0;
+            }
+
+            parseYoY(value) {
+                if (!value || value === '' || value === null || value === undefined) return null;
+                const num = parseFloat(value);
+                if (isNaN(num)) return null;
+                
+                // Enhanced YoY parsing logic
+                if (Math.abs(num) <= 1) {
+                    return num * 100; // Decimal format
+                } else if (Math.abs(num) < 100) {
+                    return num; // Already percentage format
+                } else {
+                    return num; // Large percentage or outlier
+                }
             }
 
             mergeData() {
                 const merged = [];
                 
-                const trafficMap = new Map();
-                this.trafficData.forEach(row => {
-                    if (row.ASIN) trafficMap.set(String(row.ASIN), row);
-                });
-
-                const inventoryMap = new Map();
-                this.inventoryData.forEach(row => {
-                    if (row.ASIN) inventoryMap.set(String(row.ASIN), row);
-                });
-
-                this.salesData.forEach(salesRow => {
-                    if (!salesRow.ASIN) return;
-
-                    const asin = String(salesRow.ASIN);
-                    const trafficRow = trafficMap.get(asin) || {};
-                    const inventoryRow = inventoryMap.get(asin) || {};
-
-                    const orderedUnits = this.parseNum(salesRow['Ordered units']) || 0;
-                    const orderedRevenue = this.parseCurrency(salesRow['Ordered revenue']) || 0;
-                    const dispatchedRevenue = this.parseCurrency(salesRow['Dispatched revenue']) || 0;
-                    const dispatchedCOGS = this.parseCurrency(salesRow['Dispatched COGS']) || 0;
-                    const dispatchedUnits = this.parseNum(salesRow['Dispatched units']) || 0;
-                    const pageViews = this.parseNum(trafficRow['Featured offer page views']) || 0;
-                    const leadTime = this.parseNum(inventoryRow['Overall Vendor Lead Time (days)']) || 0;
-                    
-                    if (orderedUnits === 0 && orderedRevenue === 0) return;
-                    
-                    const conversionRate = pageViews > 0 ? (orderedUnits / pageViews) * 100 : 0;
-                    const dailySales = orderedRevenue / this.daysInMonth;
-                    const netPPM = dispatchedRevenue > 0 ? ((dispatchedRevenue - dispatchedCOGS) / dispatchedRevenue) * 100 : 0;
-                    const shipRate = orderedUnits > 0 ? (dispatchedUnits / orderedUnits) * 100 : 0;
-
-                    const orderedRevenueYoY = this.parseYoY(salesRow['Ordered Revenue – Same Period Last Year (%)']);
-                    const orderedUnitsYoY = this.parseYoY(salesRow['Ordered Units – Same Period Last Year (%)']);
-                    const pageViewsYoY = this.parseYoY(trafficRow['Featured offer page views – Same Period Last Year (%)']);
-                    const leadTimeYoY = this.parseYoY(inventoryRow['Overall Vendor Lead Time (days) – Same Period Last Year (%)']);
-
-                    merged.push({
-                        asin: salesRow.ASIN,
-                        productTitle: salesRow['Product title'] || '',
-                        brand: salesRow.Brand || '',
-                        orderedUnits,
-                        orderedRevenue,
-                        dispatchedRevenue,
-                        dispatchedCOGS,
-                        dispatchedUnits,
-                        pageViews,
-                        conversionRate,
-                        dailySales,
-                        netPPM,
-                        leadTime,
-                        aged90Percent,
-                        sellableUnits,
-                        aged90Units,
-                        orderedRevenueYoY,
-                        orderedUnitsYoY,
-                        pageViewsYoY,
-                        leadTimeYoY
+                try {
+                    const trafficMap = new Map();
+                    this.trafficData.forEach(row => {
+                        if (row.ASIN) trafficMap.set(String(row.ASIN), row);
                     });
-                });
 
-                return merged.sort((a, b) => b.orderedRevenue - a.orderedRevenue);
-            }
+                    const inventoryMap = new Map();
+                    this.inventoryData.forEach(row => {
+                        if (row.ASIN) inventoryMap.set(String(row.ASIN), row);
+                    });
 
-            parseNum(value) {
-                if (!value) return 0;
-                return parseInt(String(value).replace(/[,]/g, '')) || 0;
-            }
+                    this.salesData.forEach(salesRow => {
+                        try {
+                            if (!salesRow.ASIN) return;
 
-            parseCurrency(value) {
-                if (!value) return 0;
-                return parseFloat(String(value).replace(/[£$,]/g, '')) || 0;
-            }
+                            const asin = String(salesRow.ASIN);
+                            const trafficRow = trafficMap.get(asin) || {};
+                            const inventoryRow = inventoryMap.get(asin) || {};
 
-            parseYoY(value) {
-                if (!value || value === '' || value === null) return null;
-                const num = parseFloat(value);
-                if (isNaN(num)) return null;
-                
-                // FIXED: Amazon provides percentages in different formats
-                // Values like -0.1575 = -15.75%, but 16.4304 = 16.43% (already a percentage)
-                // If absolute value is ≤ 1, it's decimal format, multiply by 100
-                // If > 1 but < 100, it's likely already a percentage
-                // If ≥ 100, it's definitely a percentage (like 1643.04% growth)
-                
-                if (Math.abs(num) <= 1) {
-                    return num * 100; // Convert decimal to percentage
-                } else if (Math.abs(num) < 100) {
-                    return num; // Already a percentage
-                } else {
-                    return num; // Large percentage values
+                            const orderedUnits = this.parseNum(salesRow['Ordered units']) || 0;
+                            const orderedRevenue = this.parseNum(salesRow['Ordered revenue']) || 0;
+                            
+                            // Skip rows with no units and no revenue
+                            if (orderedUnits === 0 && orderedRevenue === 0) return;
+                            
+                            const dispatchedRevenue = this.parseNum(salesRow['Dispatched revenue']) || 0;
+                            const dispatchedCOGS = this.parseNum(salesRow['Dispatched COGS']) || 0;
+                            const pageViews = this.parseNum(trafficRow['Featured offer page views']) || 0;
+                            const leadTime = this.parseNum(inventoryRow['Overall Vendor Lead Time (days)']) || 0;
+                            const sellableUnits = this.parseNum(inventoryRow['Sellable On Hand Units']) || 0;
+                            const aged90Units = this.parseNum(inventoryRow['Aged 90+ Days Sellable Units']) || 0;
+                            
+                            const conversionRate = pageViews > 0 ? (orderedUnits / pageViews) * 100 : 0;
+                            const dailySales = orderedRevenue / this.daysInMonth;
+                            const netPPM = dispatchedRevenue > 0 ? ((dispatchedRevenue - dispatchedCOGS) / dispatchedRevenue) * 100 : 0;
+                            const aged90Percent = sellableUnits > 0 ? (aged90Units / sellableUnits) * 100 : 0;
+                            
+                            // YoY calculations
+                            const orderedRevenueYoY = this.parseYoY(salesRow['Ordered Revenue – Same Period Last Year (%)']);
+                            const orderedUnitsYoY = this.parseYoY(salesRow['Ordered Units – Same Period Last Year (%)']);
+                            const dispatchedUnitsYoY = this.parseYoY(salesRow['Dispatched Units – Same Period Last Year (%)']);
+                            const pageViewsYoY = this.parseYoY(trafficRow['Featured offer page views – Same Period Last Year (%)']);
+                            const leadTimeYoY = this.parseYoY(inventoryRow['Overall Vendor Lead Time (days) – Same Period Last Year (%)']);
+                            const aged90YoY = this.parseYoY(inventoryRow['Aged 90+ Days Sellable Units – Same Period Last Year (%)']);
+
+                            merged.push({
+                                asin: asin,
+                                title: salesRow['Product title'] || '',
+                                brand: salesRow['Brand'] || '',
+                                orderedUnits: orderedUnits,
+                                orderedRevenue: orderedRevenue,
+                                dispatchedRevenue: dispatchedRevenue,
+                                dispatchedCOGS: dispatchedCOGS,
+                                pageViews: pageViews,
+                                conversionRate: conversionRate,
+                                dailySales: dailySales,
+                                netPPM: netPPM,
+                                leadTime: leadTime,
+                                sellableUnits: sellableUnits,
+                                aged90Units: aged90Units,
+                                aged90Percent: aged90Percent,
+                                orderedRevenueYoY: orderedRevenueYoY,
+                                orderedUnitsYoY: orderedUnitsYoY,
+                                dispatchedUnitsYoY: dispatchedUnitsYoY,
+                                pageViewsYoY: pageViewsYoY,
+                                leadTimeYoY: leadTimeYoY,
+                                aged90YoY: aged90YoY
+                            });
+                        } catch (rowError) {
+                            console.warn('Row processing error:', rowError);
+                        }
+                    });
+
+                    return merged;
+                } catch (error) {
+                    console.error('Merge data error:', error);
+                    throw new Error('Failed to merge data: ' + error.message);
                 }
             }
 
-            formatYoY(value) {
-                if (value === null) return 'No data';
-                const formatted = value > 0 ? '+' + value.toFixed(1) + '%' : value.toFixed(1) + '%';
-                const className = value > 0 ? 'positive' : value < 0 ? 'negative' : 'neutral';
-                return '<span class="' + className + '">' + formatted + '</span>';
-            }
-
             updateDashboard() {
-                const totals = this.calculateTotals();
-                
-                this.updateElement('orderedUnits', totals.orderedUnits.toLocaleString());
-                this.updateElement('orderedRevenue', '£' + totals.orderedRevenue.toLocaleString());
-                this.updateElement('pageViews', totals.pageViews.toLocaleString());
-                this.updateElement('conversionRate', totals.conversionRate.toFixed(2) + '%');
-                this.updateElement('dailySales', '£' + totals.dailySales.toLocaleString());
-                this.updateElement('netPPM', totals.netPPM.toFixed(1) + '%');
-                this.updateElement('vendorLeadTime', totals.leadTime.toFixed(1) + ' days');
-                this.updateElement('shippedUnits', totals.shippedUnits.toLocaleString());
-                this.updateElement('aged90Percent', totals.aged90Percent.toFixed(1) + '%');
+                try {
+                    const totals = this.calculateTotals();
+                    
+                    // Update metric cards
+                    this.updateElement('orderedUnits', totals.orderedUnits.toLocaleString());
+                    this.updateElement('orderedRevenue', '£' + totals.orderedRevenue.toLocaleString());
+                    this.updateElement('pageViews', totals.pageViews.toLocaleString());
+                    this.updateElement('conversionRate', totals.conversionRate.toFixed(2) + '%');
+                    this.updateElement('dailySales', '£' + totals.dailySales.toLocaleString());
+                    this.updateElement('netPPM', totals.netPPM.toFixed(1) + '%');
+                    this.updateElement('vendorLeadTime', totals.leadTime.toFixed(0) + ' days');
+                    this.updateElement('aged90Percent', totals.aged90Percent.toFixed(1) + '%');
 
-                this.updateElementHTML('orderedUnitsChange', this.formatYoY(totals.orderedUnitsYoY));
-                this.updateElementHTML('orderedRevenueChange', this.formatYoY(totals.orderedRevenueYoY));
-                this.updateElementHTML('pageViewsChange', this.formatYoY(totals.pageViewsYoY));
-                this.updateElementHTML('vendorLeadTimeChange', this.formatYoY(totals.leadTimeYoY));
-            }
-
-            updateElement(id, value) {
-                const el = document.getElementById(id);
-                if (el) el.textContent = value;
-            }
-
-            updateElementHTML(id, html) {
-                const el = document.getElementById(id);
-                if (el) el.innerHTML = html;
+                    // Update YoY changes
+                    this.updateYoYChange('orderedUnitsChange', totals.orderedUnitsYoY);
+                    this.updateYoYChange('orderedRevenueChange', totals.orderedRevenueYoY);
+                    this.updateYoYChange('pageViewsChange', totals.pageViewsYoY);
+                    this.updateYoYChange('conversionRateChange', totals.conversionRateYoY);
+                    this.updateYoYChange('dailySalesChange', totals.orderedRevenueYoY);
+                    this.updateYoYChange('netPPMChange', totals.netPPMYoY);
+                    this.updateYoYChange('vendorLeadTimeChange', totals.leadTimeYoY);
+                    this.updateYoYChange('aged90PercentChange', totals.aged90YoY);
+                } catch (error) {
+                    console.error('Dashboard update error:', error);
+                    throw error;
+                }
             }
 
             calculateTotals() {
@@ -930,174 +924,147 @@
                     orderedRevenue: 0,
                     pageViews: 0,
                     dailySales: 0,
-                    shippedUnits: 0,
-                    leadTime: 0,
-                    sellableUnits: 0,
+                    netPPMWeighted: 0,
+                    netPPMWeight: 0,
+                    leadTimeWeighted: 0,
+                    leadTimeWeight: 0,
                     aged90Units: 0,
-                    orderedUnitsYoY: null,
-                    orderedRevenueYoY: null,
-                    pageViewsYoY: null,
-                    leadTimeYoY: null
+                    sellableUnits: 0
                 };
 
-                let yoyData = { units: 0, revenue: 0, pageViews: 0, leadTime: 0 };
-                let yoyCount = { units: 0, revenue: 0, pageViews: 0, leadTime: 0 };
-                let leadTimeSum = 0;
-                let leadTimeWeight = 0;
+                const yoyValues = {
+                    orderedUnits: [],
+                    orderedRevenue: [],
+                    pageViews: [],
+                    leadTime: [],
+                    aged90: []
+                };
 
                 this.processedData.forEach(item => {
                     totals.orderedUnits += item.orderedUnits;
                     totals.orderedRevenue += item.orderedRevenue;
                     totals.pageViews += item.pageViews;
                     totals.dailySales += item.dailySales;
-                    totals.shippedUnits += item.dispatchedUnits;
-                    totals.sellableUnits += item.sellableUnits || 0;
-                    totals.aged90Units += item.aged90Units || 0;
-                    
-                    if (item.leadTime > 0 && item.orderedRevenue > 0) {
-                        leadTimeSum += item.leadTime * item.orderedRevenue;
-                        leadTimeWeight += item.orderedRevenue;
+                    totals.aged90Units += item.aged90Units;
+                    totals.sellableUnits += item.sellableUnits;
+
+                    // Revenue-weighted calculations
+                    if (item.orderedRevenue > 0) {
+                        totals.netPPMWeighted += item.netPPM * item.orderedRevenue;
+                        totals.netPPMWeight += item.orderedRevenue;
+                        
+                        totals.leadTimeWeighted += item.leadTime * item.orderedRevenue;
+                        totals.leadTimeWeight += item.orderedRevenue;
                     }
 
-                    // FIXED: Use simple averaging instead of revenue-weighted for YoY
-                    // This prevents extreme values from skewing the results
+                    // Collect YoY values for averaging (filter outliers)
                     if (item.orderedUnitsYoY !== null && Math.abs(item.orderedUnitsYoY) < 1000) {
-                        yoyData.units += item.orderedUnitsYoY;
-                        yoyCount.units += 1;
+                        yoyValues.orderedUnits.push(item.orderedUnitsYoY);
                     }
                     if (item.orderedRevenueYoY !== null && Math.abs(item.orderedRevenueYoY) < 1000) {
-                        yoyData.revenue += item.orderedRevenueYoY;
-                        yoyCount.revenue += 1;
+                        yoyValues.orderedRevenue.push(item.orderedRevenueYoY);
                     }
                     if (item.pageViewsYoY !== null && Math.abs(item.pageViewsYoY) < 1000) {
-                        yoyData.pageViews += item.pageViewsYoY;
-                        yoyCount.pageViews += 1;
+                        yoyValues.pageViews.push(item.pageViewsYoY);
                     }
                     if (item.leadTimeYoY !== null && Math.abs(item.leadTimeYoY) < 1000) {
-                        yoyData.leadTime += item.leadTimeYoY;
-                        yoyCount.leadTime += 1;
+                        yoyValues.leadTime.push(item.leadTimeYoY);
+                    }
+                    if (item.aged90YoY !== null && Math.abs(item.aged90YoY) < 1000) {
+                        yoyValues.aged90.push(item.aged90YoY);
                     }
                 });
 
-                totals.conversionRate = totals.pageViews > 0 ? (totals.orderedUnits / totals.pageViews) * 100 : 0;
-                totals.netPPM = this.calculateNetPPM();
-                totals.aged90Percent = totals.sellableUnits > 0 ? (totals.aged90Units / totals.sellableUnits) * 100 : 0;
-                totals.leadTime = leadTimeWeight > 0 ? leadTimeSum / leadTimeWeight : 0;
-
-                // FIXED: Simple averaging for YoY to prevent extreme skewing
-                totals.orderedUnitsYoY = yoyCount.units > 0 ? yoyData.units / yoyCount.units : null;
-                totals.orderedRevenueYoY = yoyCount.revenue > 0 ? yoyData.revenue / yoyCount.revenue : null;
-                totals.pageViewsYoY = yoyCount.pageViews > 0 ? yoyData.pageViews / yoyCount.pageViews : null;
-                totals.leadTimeYoY = yoyCount.leadTime > 0 ? yoyData.leadTime / yoyCount.leadTime : null;
-
-                return totals;
+                // Calculate averages and ratios
+                return {
+                    orderedUnits: totals.orderedUnits,
+                    orderedRevenue: totals.orderedRevenue,
+                    pageViews: totals.pageViews,
+                    conversionRate: totals.pageViews > 0 ? (totals.orderedUnits / totals.pageViews) * 100 : 0,
+                    dailySales: totals.dailySales,
+                    netPPM: totals.netPPMWeight > 0 ? totals.netPPMWeighted / totals.netPPMWeight : 0,
+                    leadTime: totals.leadTimeWeight > 0 ? totals.leadTimeWeighted / totals.leadTimeWeight : 0,
+                    aged90Percent: totals.sellableUnits > 0 ? (totals.aged90Units / totals.sellableUnits) * 100 : 0,
+                    orderedUnitsYoY: this.calculateAverage(yoyValues.orderedUnits),
+                    orderedRevenueYoY: this.calculateAverage(yoyValues.orderedRevenue),
+                    pageViewsYoY: this.calculateAverage(yoyValues.pageViews),
+                    conversionRateYoY: this.calculateAverage(yoyValues.orderedUnits), // Approximation
+                    netPPMYoY: this.calculateAverage(yoyValues.orderedRevenue), // Approximation
+                    leadTimeYoY: this.calculateAverage(yoyValues.leadTime),
+                    aged90YoY: this.calculateAverage(yoyValues.aged90)
+                };
             }
 
-            calculateNetPPM() {
-                let totalRevenue = 0;
-                let totalProfit = 0;
-
-                this.processedData.forEach(item => {
-                    totalRevenue += item.dispatchedRevenue;
-                    totalProfit += (item.dispatchedRevenue - item.dispatchedCOGS);
-                });
-
-                return totalRevenue > 0 ? (totalProfit / totalRevenue) * 100 : 0;
+            calculateAverage(values) {
+                if (!values || values.length === 0) return null;
+                const sum = values.reduce((a, b) => a + b, 0);
+                return sum / values.length;
             }
 
-            populateInsights() {
-                const avgConversion = this.processedData.reduce((sum, item) => sum + item.conversionRate, 0) / this.processedData.length;
-                
-                const allPageViews = this.processedData.map(item => item.pageViews).filter(pv => pv > 0).sort((a, b) => a - b);
-                const medianPageViews = allPageViews[Math.floor(allPageViews.length / 2)] || 0;
-
-                const topConverting = this.processedData
-                    .filter(item => item.conversionRate > avgConversion * 1.15)
-                    .slice(0, 20);
-
-                const revenueRecovery = this.processedData
-                    .filter(item => {
-                        return item.conversionRate < avgConversion && 
-                               item.orderedRevenue >= 1000 && 
-                               item.pageViews > medianPageViews;
-                    })
-                    .sort((a, b) => b.orderedRevenue - a.orderedRevenue)
-                    .slice(0, 20);
-
-                if (revenueRecovery.length === 0) {
-                    const fallback = this.processedData
-                        .filter(item => item.conversionRate < avgConversion && item.orderedRevenue >= 1000)
-                        .sort((a, b) => b.orderedRevenue - a.orderedRevenue)
-                        .slice(0, 1);
-                    revenueRecovery.push(...fallback);
-                }
-
-                const topRevenue = this.processedData.slice(0, 20);
-
-                this.populateList('topConvertingList', topConverting, 'conversion');
-                this.populateList('revenueRecoveryList', revenueRecovery, 'recovery');
-                this.populateList('topRevenueList', topRevenue, 'revenue');
+            updateElement(id, value) {
+                const element = document.getElementById(id);
+                if (element) element.textContent = value;
             }
 
-            populateList(listId, items, type) {
-                const list = document.getElementById(listId);
-                if (!list) return;
+            updateYoYChange(id, value) {
+                const element = document.getElementById(id);
+                if (!element) return;
 
-                list.innerHTML = '';
-                
-                if (items.length === 0) {
-                    const li = document.createElement('li');
-                    li.textContent = 'No products meet criteria';
-                    list.appendChild(li);
+                if (value === null || value === undefined) {
+                    element.textContent = 'N/A';
+                    element.className = 'metric-change neutral';
                     return;
                 }
 
-                items.forEach(item => {
-                    const li = document.createElement('li');
-                    const title = item.productTitle.length > 40 ? 
-                        item.productTitle.substring(0, 40) + '...' : 
-                        item.productTitle;
-                    
-                    if (type === 'conversion') {
-                        li.textContent = title + ' (' + item.conversionRate.toFixed(2) + '%)';
-                    } else if (type === 'recovery') {
-                        li.textContent = title + ' (£' + item.orderedRevenue.toLocaleString() + ', ' + item.conversionRate.toFixed(2) + '%)';
-                    } else {
-                        li.textContent = title + ' (£' + item.orderedRevenue.toLocaleString() + ')';
-                    }
-                    list.appendChild(li);
-                });
+                const formatted = (value >= 0 ? '+' : '') + value.toFixed(1) + '%';
+                element.textContent = formatted;
+                
+                if (value > 0) {
+                    element.className = 'metric-change positive';
+                } else if (value < 0) {
+                    element.className = 'metric-change negative';
+                } else {
+                    element.className = 'metric-change neutral';
+                }
             }
 
             createCharts() {
                 this.destroyCharts();
-                this.createRevenueChart();
-                this.createProductsChart();
+                
+                try {
+                    this.createRevenueChart();
+                    this.createProductsChart();
+                } catch (error) {
+                    console.error('Chart creation error:', error);
+                }
             }
 
             destroyCharts() {
                 Object.values(this.charts).forEach(chart => {
-                    if (chart && chart.destroy) chart.destroy();
+                    if (chart && typeof chart.destroy === 'function') {
+                        chart.destroy();
+                    }
                 });
                 this.charts = {};
             }
 
             createRevenueChart() {
                 const ctx = document.getElementById('revenueChart');
-                if (!ctx || !Chart) return;
+                if (!ctx) return;
 
-                const topProducts = this.processedData.slice(0, 10);
-                
+                const sortedData = [...this.processedData]
+                    .sort((a, b) => b.orderedRevenue - a.orderedRevenue)
+                    .slice(0, 10);
+
                 this.charts.revenue = new Chart(ctx, {
                     type: 'bar',
                     data: {
-                        labels: topProducts.map(p => p.productTitle.length > 30 ? 
-                            p.productTitle.substring(0, 30) + '...' : p.productTitle),
+                        labels: sortedData.map(item => item.title.substring(0, 30) + '...'),
                         datasets: [{
-                            label: 'Revenue',
-                            data: topProducts.map(p => p.orderedRevenue),
-                            backgroundColor: 'rgba(34, 139, 34, 0.7)',
-                            borderColor: 'rgba(34, 139, 34, 1)',
+                            label: 'Revenue (£)',
+                            data: sortedData.map(item => item.orderedRevenue),
+                            backgroundColor: '#228B22',
+                            borderColor: '#006400',
                             borderWidth: 1
                         }]
                     },
@@ -1105,7 +1072,9 @@
                         responsive: true,
                         maintainAspectRatio: false,
                         plugins: {
-                            legend: { display: false }
+                            legend: {
+                                display: false
+                            }
                         },
                         scales: {
                             y: {
@@ -1117,7 +1086,9 @@
                                 }
                             },
                             x: {
-                                ticks: { maxRotation: 45 }
+                                ticks: {
+                                    maxRotation: 45
+                                }
                             }
                         }
                     }
@@ -1126,20 +1097,21 @@
 
             createProductsChart() {
                 const ctx = document.getElementById('productsChart');
-                if (!ctx || !Chart) return;
+                if (!ctx) return;
 
-                const topProducts = this.processedData.slice(0, 8);
-                
+                const sortedData = [...this.processedData]
+                    .sort((a, b) => b.orderedUnits - a.orderedUnits)
+                    .slice(0, 10);
+
                 this.charts.products = new Chart(ctx, {
                     type: 'doughnut',
                     data: {
-                        labels: topProducts.map(p => p.productTitle.length > 25 ? 
-                            p.productTitle.substring(0, 25) + '...' : p.productTitle),
+                        labels: sortedData.map(item => item.title.substring(0, 25) + '...'),
                         datasets: [{
-                            data: topProducts.map(p => p.orderedRevenue),
+                            data: sortedData.map(item => item.orderedUnits),
                             backgroundColor: [
-                                '#228B22', '#32CD32', '#7CFC00', '#ADFF2F',
-                                '#9ACD32', '#6B8E23', '#556B2F', '#8FBC8F'
+                                '#228B22', '#32CD32', '#90EE90', '#98FB98', '#00FF7F',
+                                '#00FA9A', '#7FFF00', '#ADFF2F', '#9AFF9A', '#00FF00'
                             ]
                         }]
                     },
@@ -1148,11 +1120,7 @@
                         maintainAspectRatio: false,
                         plugins: {
                             legend: {
-                                position: 'bottom',
-                                labels: {
-                                    boxWidth: 12,
-                                    padding: 10
-                                }
+                                position: 'right'
                             }
                         }
                     }
@@ -1164,119 +1132,186 @@
                 if (!tbody) return;
 
                 tbody.innerHTML = '';
-                const limitedData = this.processedData.slice(0, 50);
+                
+                const sortedData = [...this.processedData]
+                    .sort((a, b) => b.orderedRevenue - a.orderedRevenue)
+                    .slice(0, 50); // Limit to top 50
 
-                limitedData.forEach(item => {
-                    const row = document.createElement('tr');
-                    
-                    const cells = [
-                        item.asin,
-                        item.productTitle.length > 40 ? item.productTitle.substring(0, 40) + '...' : item.productTitle,
-                        item.orderedUnits.toLocaleString(),
-                        '£' + item.orderedRevenue.toLocaleString(),
-                        item.pageViews.toLocaleString(),
-                        item.conversionRate.toFixed(2) + '%',
-                        '£' + item.dailySales.toFixed(2),
-                        item.dispatchedUnits.toLocaleString(),
-                        item.aged90Percent.toFixed(1) + '%',
-                        item.leadTime.toFixed(1),
-                        item.netPPM.toFixed(1) + '%'
-                    ];
-
-                    cells.forEach(cellData => {
-                        const cell = document.createElement('td');
-                        cell.textContent = cellData;
-                        row.appendChild(cell);
-                    });
-
-                    tbody.appendChild(row);
+                sortedData.forEach(item => {
+                    const row = tbody.insertRow();
+                    row.innerHTML = `
+                        <td>${item.asin}</td>
+                        <td>${item.title}</td>
+                        <td>${item.orderedUnits.toLocaleString()}</td>
+                        <td>£${item.orderedRevenue.toLocaleString()}</td>
+                        <td>${item.pageViews.toLocaleString()}</td>
+                        <td>${item.conversionRate.toFixed(2)}%</td>
+                        <td>£${item.dailySales.toFixed(0)}</td>
+                        <td>${item.leadTime.toFixed(0)}</td>
+                        <td>${item.aged90Percent.toFixed(1)}%</td>
+                        <td>${item.netPPM.toFixed(1)}%</td>
+                    `;
                 });
+            }
 
-                if (this.processedData.length > 50) {
-                    const tableContainer = document.querySelector('.data-table');
-                    if (tableContainer) {
-                        const existingNote = tableContainer.querySelector('.table-limit-note');
-                        if (existingNote) existingNote.remove();
-                        
-                        const note = document.createElement('p');
-                        note.className = 'table-limit-note';
-                        note.style.cssText = 'margin-top: 10px; font-style: italic; color: #666; text-align: center;';
-                        note.textContent = 'Showing top 50 of ' + this.processedData.length + ' products. Export for full data.';
-                        tableContainer.appendChild(note);
+            populateInsights() {
+                this.populateTopConverting();
+                this.populateRevenueRecovery();
+                this.populateTopRevenue();
+            }
+
+            populateTopConverting() {
+                const avgConversion = this.processedData.reduce((sum, item) => sum + item.conversionRate, 0) / this.processedData.length;
+                const threshold = avgConversion * 1.15; // 15% above average
+                
+                const topConverting = this.processedData
+                    .filter(item => item.conversionRate > threshold && item.orderedUnits > 0)
+                    .sort((a, b) => b.conversionRate - a.conversionRate)
+                    .slice(0, 20);
+
+                const list = document.getElementById('topConvertingList');
+                if (list) {
+                    list.innerHTML = '';
+                    topConverting.forEach(item => {
+                        const li = document.createElement('li');
+                        li.textContent = `${item.title} - ${item.conversionRate.toFixed(2)}%`;
+                        list.appendChild(li);
+                    });
+                    
+                    if (topConverting.length === 0) {
+                        const li = document.createElement('li');
+                        li.textContent = 'No products significantly above average conversion rate';
+                        list.appendChild(li);
                     }
+                }
+            }
+
+            populateRevenueRecovery() {
+                const avgConversion = this.processedData.reduce((sum, item) => sum + item.conversionRate, 0) / this.processedData.length;
+                const pageViews = this.processedData.map(item => item.pageViews).filter(pv => pv > 0);
+                const medianPageViews = pageViews.sort((a, b) => a - b)[Math.floor(pageViews.length / 2)] || 0;
+                
+                let recoveryOpportunities = this.processedData
+                    .filter(item => 
+                        item.orderedRevenue >= 1000 && 
+                        item.conversionRate < avgConversion && 
+                        item.pageViews > medianPageViews
+                    )
+                    .sort((a, b) => b.orderedRevenue - a.orderedRevenue)
+                    .slice(0, 20);
+
+                // Fallback: if no opportunities found, show top revenue products with below-average conversion
+                if (recoveryOpportunities.length === 0) {
+                    recoveryOpportunities = this.processedData
+                        .filter(item => item.orderedRevenue >= 500 && item.conversionRate < avgConversion)
+                        .sort((a, b) => b.orderedRevenue - a.orderedRevenue)
+                        .slice(0, 5);
+                }
+
+                const list = document.getElementById('revenueRecoveryList');
+                if (list) {
+                    list.innerHTML = '';
+                    recoveryOpportunities.forEach(item => {
+                        const li = document.createElement('li');
+                        li.textContent = `${item.title} - £${item.orderedRevenue.toLocaleString()} (${item.conversionRate.toFixed(2)}%)`;
+                        list.appendChild(li);
+                    });
+                    
+                    if (recoveryOpportunities.length === 0) {
+                        const li = document.createElement('li');
+                        li.textContent = 'No clear recovery opportunities identified';
+                        list.appendChild(li);
+                    }
+                }
+            }
+
+            populateTopRevenue() {
+                const topRevenue = this.processedData
+                    .sort((a, b) => b.orderedRevenue - a.orderedRevenue)
+                    .slice(0, 20);
+
+                const list = document.getElementById('topRevenueList');
+                if (list) {
+                    list.innerHTML = '';
+                    topRevenue.forEach(item => {
+                        const li = document.createElement('li');
+                        li.textContent = `${item.title} - £${item.orderedRevenue.toLocaleString()}`;
+                        list.appendChild(li);
+                    });
                 }
             }
 
             exportExcel() {
                 try {
-                    if (!XLSX) {
-                        this.showError('Excel library not loaded');
-                        return;
-                    }
-
-                    const data = this.processedData.map(item => ({
+                    const ws = XLSX.utils.json_to_sheet(this.processedData.map(item => ({
                         'ASIN': item.asin,
-                        'Product Title': item.productTitle,
+                        'Product Title': item.title,
+                        'Brand': item.brand,
                         'Ordered Units': item.orderedUnits,
                         'Ordered Revenue': item.orderedRevenue,
                         'Page Views': item.pageViews,
                         'Conversion Rate %': item.conversionRate.toFixed(2),
                         'Daily Sales': item.dailySales.toFixed(2),
-                        'Shipped Units': item.dispatchedUnits,
+                        'Net PPM %': item.netPPM.toFixed(2),
+                        'Lead Time Days': item.leadTime.toFixed(0),
                         '90+ Days Inventory %': item.aged90Percent.toFixed(1),
-                        'Lead Time Days': item.leadTime.toFixed(1),
-                        'Net PPM %': item.netPPM.toFixed(1)
-                    }));
+                        'Ordered Revenue YoY %': item.orderedRevenueYoY ? item.orderedRevenueYoY.toFixed(1) : 'N/A',
+                        'Ordered Units YoY %': item.orderedUnitsYoY ? item.orderedUnitsYoY.toFixed(1) : 'N/A'
+                    })));
 
-                    const ws = XLSX.utils.json_to_sheet(data);
                     const wb = XLSX.utils.book_new();
-                    XLSX.utils.book_append_sheet(wb, ws, 'Analysis');
-                    XLSX.writeFile(wb, 'vendor_analysis.xlsx');
-
-                    this.showSuccess('Excel exported successfully!');
+                    XLSX.utils.book_append_sheet(wb, ws, 'Vendor Performance Report');
+                    
+                    const fileName = 'vendor_performance_report_' + new Date().toISOString().split('T')[0] + '.xlsx';
+                    XLSX.writeFile(wb, fileName);
+                    
+                    this.showSuccess('Excel report exported successfully!');
                 } catch (error) {
+                    console.error('Export error:', error);
                     this.showError('Export failed: ' + error.message);
                 }
             }
 
             exportCSV() {
                 try {
-                    const headers = ['ASIN', 'Product Title', 'Ordered Units', 'Ordered Revenue', 'Page Views', 
-                                   'Conversion Rate %', 'Daily Sales', 'Shipped Units', '90+ Days Inventory %', 'Lead Time Days', 'Net PPM %'];
-                    
-                    const csvContent = [headers].concat(
-                        this.processedData.map(item => [
-                            item.asin,
-                            item.productTitle,
-                            item.orderedUnits,
-                            item.orderedRevenue,
-                            item.pageViews,
-                            item.conversionRate.toFixed(2),
-                            item.dailySales.toFixed(2),
-                            item.dispatchedUnits,
-                            item.aged90Percent.toFixed(1),
-                            item.leadTime.toFixed(1),
-                            item.netPPM.toFixed(1)
-                        ])
-                    ).map(row => row.join(',')).join('\n');
+                    const csvData = this.processedData.map(item => ({
+                        'ASIN': item.asin,
+                        'Product Title': item.title,
+                        'Brand': item.brand,
+                        'Ordered Units': item.orderedUnits,
+                        'Ordered Revenue': item.orderedRevenue,
+                        'Page Views': item.pageViews,
+                        'Conversion Rate %': item.conversionRate.toFixed(2),
+                        'Daily Sales': item.dailySales.toFixed(2),
+                        'Net PPM %': item.netPPM.toFixed(2),
+                        'Lead Time Days': item.leadTime.toFixed(0),
+                        '90+ Days Inventory %': item.aged90Percent.toFixed(1),
+                        'Ordered Revenue YoY %': item.orderedRevenueYoY ? item.orderedRevenueYoY.toFixed(1) : 'N/A',
+                        'Ordered Units YoY %': item.orderedUnitsYoY ? item.orderedUnitsYoY.toFixed(1) : 'N/A'
+                    }));
 
-                    const blob = new Blob([csvContent], { type: 'text/csv' });
+                    const csv = Papa.unparse(csvData);
+                    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                    const link = document.createElement('a');
                     const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = 'vendor_analysis.csv';
-                    a.click();
-                    URL.revokeObjectURL(url);
-
-                    this.showSuccess('CSV exported successfully!');
+                    link.setAttribute('href', url);
+                    link.setAttribute('download', 'vendor_performance_report_' + new Date().toISOString().split('T')[0] + '.csv');
+                    link.style.visibility = 'hidden';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    
+                    this.showSuccess('CSV report exported successfully!');
                 } catch (error) {
+                    console.error('Export error:', error);
                     this.showError('Export failed: ' + error.message);
                 }
             }
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            window.dashboard = new VendorDashboard();
+        // Initialize dashboard when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            new VendorDashboard();
         });
     </script>
 </body>
