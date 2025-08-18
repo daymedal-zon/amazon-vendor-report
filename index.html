@@ -5,35 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self';">
     <title>Zon Amazon Vendor Audit Tool</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" 
-            integrity="sha512-r22gChDnGvBylk90+2e/ycr3RVrDi8DIOkIGNhJlKfuyQM4tIRAI062MaV8sfjQKYVGjOBaZBOA87z+IhZE9DA==" 
-            crossorigin="anonymous" 
-            onerror="handleCDNFailure('xlsx')"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js" 
-            integrity="sha512-SGWgwwRA8xZgEoKiex3UubkSkV1zSE1BS6O4pXcaxcNtUlQsOmOmhVnDwIvqGRfEmuz83tIGL13cXMZn6upPyg==" 
-            crossorigin="anonymous" 
-            onerror="handleCDNFailure('papa')"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js" 
-            integrity="sha512-ElRFoEQdI5Ht6kZvyzXhYG9NqjtkmlkfYk0wr6wHxU9JEHakS7UJZNeml5ALk+8IKlU6jDgMabC3vkumRokgJA==" 
-            crossorigin="anonymous" 
-            onerror="handleCDNFailure('chart')"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" integrity="sha512-r22gChDnGvBylk90+2e/ycr3RVrDi8DIOkIGNhJlKfuyQM4tIRAI062MaV8sfjQKYVGjOBaZBOA87z+IhZE9DA==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js" integrity="sha512-SGWgwwRA8xZgEoKiex3UubkSkV1zSE1BS6O4pXcaxcNtUlQsOmOmhVnDwIvqGRfEmuz83tIGL13cXMZn6upPyg==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js" integrity="sha512-ElRFoEQdI5Ht6kZvyzXhYG9NqjtkmlkfYk0wr6wHxU9JEHakS7UJZNeml5ALk+8IKlU6jDgMabC3vkumRokgJA==" crossorigin="anonymous"></script>
     
-    <script>
-        function handleCDNFailure(library) {
-            console.error(`Failed to load ${library} from CDN`);
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const missingLibs = [];
-            if (typeof XLSX === 'undefined') missingLibs.push('XLSX');
-            if (typeof Papa === 'undefined') missingLibs.push('PapaParse');
-            if (typeof Chart === 'undefined') missingLibs.push('Chart.js');
-            
-            if (missingLibs.length > 0) {
-                console.warn(`Missing libraries: ${missingLibs.join(', ')}`);
-            }
-        });
-    </script>
     <style>
         * {
             margin: 0;
@@ -232,7 +207,6 @@
             to { transform: rotate(360deg); }
         }
 
-        /* Dashboard styles - INITIALLY HIDDEN */
         .dashboard {
             display: none;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -442,13 +416,13 @@
     <div class="container">
         <div class="header">
             <h1>Zon Amazon Vendor Audit</h1>
-            <p>Professional analytics dashboard for Amazon Vendor Central performance optimization</p>
+            <p>Analytics dashboard for publisher performance optimisation</p>
         </div>
 
         <div class="upload-section">
             <h2>Upload Your Excel Reports</h2>
             <div class="note">
-                <strong>Note:</strong> Upload your Amazon Vendor Central Excel files below. Supports files up to 50MB. Net PPM calculated as (Dispatched Revenue - Dispatched COGS) ÷ Dispatched Revenue.
+                <strong>Note:</strong> Upload your Amazon Vendor Central Excel files below. Supports files up to 50MB.
             </div>
             
             <div class="error-message" id="errorMessage"></div>
@@ -562,7 +536,7 @@
                     </div>
                     <div class="summary-card">
                         <h4>💰 Revenue Recovery Opportunities</h4>
-                        <p>High-revenue products with below-average conversion rates</p>
+                        <p>High-revenue products (£1k+) with below-average conversion and significant traffic</p>
                         <ul class="summary-list" id="revenueRecoveryList"></ul>
                     </div>
                     <div class="summary-card">
@@ -612,139 +586,116 @@
     </div>
 
     <script>
-        'use strict';
-
-        class VendorCentralDashboard {
+        class VendorDashboard {
             constructor() {
                 this.salesData = [];
                 this.trafficData = [];
                 this.inventoryData = [];
                 this.processedData = [];
+                this.charts = {};
                 this.daysInMonth = 31;
                 this.maxFileSize = 50 * 1024 * 1024;
-                this.charts = {};
-                
-                this.initializeEventListeners();
+                this.init();
             }
 
-            initializeEventListeners() {
+            init() {
                 try {
-                    const salesFile = document.getElementById('salesFile');
-                    const trafficFile = document.getElementById('trafficFile');
-                    const inventoryFile = document.getElementById('inventoryFile');
-                    const processBtn = document.getElementById('processBtn');
-
-                    if (!salesFile || !trafficFile || !inventoryFile || !processBtn) {
-                        throw new Error('Required DOM elements not found');
-                    }
-
-                    salesFile.addEventListener('change', (e) => this.handleFileUpload(e, 'sales'));
-                    trafficFile.addEventListener('change', (e) => this.handleFileUpload(e, 'traffic'));
-                    inventoryFile.addEventListener('change', (e) => this.handleFileUpload(e, 'inventory'));
-                    processBtn.addEventListener('click', () => this.processData());
-                    
-                    // Export listeners will be attached after dashboard creation
-                    console.log('✅ Dashboard initialized successfully');
+                    this.bindEvents();
+                    console.log('Dashboard initialized');
                 } catch (error) {
-                    console.error('Initialization failed:', error);
-                    this.showError('Dashboard failed to initialize. Please refresh the page.');
+                    console.error('Init failed:', error);
+                    this.showError('Failed to initialize dashboard');
                 }
             }
 
-            attachExportListeners() {
+            bindEvents() {
+                const salesFile = document.getElementById('salesFile');
+                const trafficFile = document.getElementById('trafficFile');
+                const inventoryFile = document.getElementById('inventoryFile');
+                const processBtn = document.getElementById('processBtn');
+
+                salesFile.addEventListener('change', (e) => this.handleFile(e, 'sales'));
+                trafficFile.addEventListener('change', (e) => this.handleFile(e, 'traffic'));
+                inventoryFile.addEventListener('change', (e) => this.handleFile(e, 'inventory'));
+                processBtn.addEventListener('click', () => this.processData());
+            }
+
+            bindExportEvents() {
                 const exportExcel = document.getElementById('exportExcel');
                 const exportCSV = document.getElementById('exportCSV');
-                const exportPDF = document.getElementById('exportPDF');
                 
-                if (exportExcel) exportExcel.addEventListener('click', () => this.exportToExcel());
-                if (exportCSV) exportCSV.addEventListener('click', () => this.exportToCSV());
-                if (exportPDF) exportPDF.addEventListener('click', () => this.exportToPDF());
+                if (exportExcel) exportExcel.addEventListener('click', () => this.exportExcel());
+                if (exportCSV) exportCSV.addEventListener('click', () => this.exportCSV());
             }
 
-            showError(message) {
-                const errorDiv = document.getElementById('errorMessage');
-                if (errorDiv) {
-                    errorDiv.textContent = message;
-                    errorDiv.style.display = 'block';
-                    setTimeout(() => {
-                        errorDiv.style.display = 'none';
-                    }, 5000);
+            showError(msg) {
+                const div = document.getElementById('errorMessage');
+                if (div) {
+                    div.textContent = msg;
+                    div.style.display = 'block';
+                    setTimeout(() => div.style.display = 'none', 5000);
                 }
             }
 
-            showSuccess(message) {
-                const successDiv = document.getElementById('successMessage');
-                if (successDiv) {
-                    successDiv.textContent = message;
-                    successDiv.style.display = 'block';
-                    setTimeout(() => {
-                        successDiv.style.display = 'none';
-                    }, 3000);
+            showSuccess(msg) {
+                const div = document.getElementById('successMessage');
+                if (div) {
+                    div.textContent = msg;
+                    div.style.display = 'block';
+                    setTimeout(() => div.style.display = 'none', 3000);
                 }
             }
 
-            updateFileStatus(type, status, message) {
+            updateFileStatus(type, status, msg) {
                 const statusDiv = document.getElementById(type + 'Status');
                 const uploadDiv = document.getElementById(type + 'Upload');
                 
                 if (statusDiv) {
-                    statusDiv.textContent = message;
-                    statusDiv.className = `file-status ${status}`;
+                    statusDiv.textContent = msg;
+                    statusDiv.className = 'file-status ' + status;
                 }
                 if (uploadDiv) {
-                    uploadDiv.className = `file-upload ${status}`;
+                    uploadDiv.className = 'file-upload ' + status;
                 }
             }
 
             validateFile(file) {
                 if (!file) throw new Error('No file selected');
                 if (file.size > this.maxFileSize) {
-                    throw new Error(`File too large: ${(file.size / 1024 / 1024).toFixed(1)}MB (max 50MB)`);
-                }
-                
-                const allowedTypes = [
-                    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-                    'application/vnd.ms-excel',
-                    'text/csv'
-                ];
-
-                if (!allowedTypes.includes(file.type) && !file.name.match(/\.(xlsx|xls|csv)$/i)) {
-                    throw new Error('Invalid file type. Please upload Excel or CSV files.');
+                    throw new Error('File too large');
                 }
                 return true;
             }
 
-            handleFileUpload(event, type) {
+            handleFile(event, type) {
                 const file = event.target.files[0];
                 
                 try {
                     this.validateFile(file);
                     this.updateFileStatus(type, 'active', 'Processing...');
                     
-                    const isExcel = file.name.toLowerCase().match(/\.(xlsx|xls)$/);
-                    
-                    if (isExcel) {
-                        this.processExcelFile(file, type);
+                    if (file.name.match(/\.(xlsx|xls)$/i)) {
+                        this.processExcel(file, type);
                     } else {
-                        this.processCSVFile(file, type);
+                        this.processCSV(file, type);
                     }
                 } catch (error) {
                     this.updateFileStatus(type, 'error', error.message);
-                    this.showError(`Error uploading ${type} file: ${error.message}`);
+                    this.showError('Error: ' + error.message);
                 }
             }
 
-            processExcelFile(file, type) {
+            processExcel(file, type) {
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     try {
                         const data = new Uint8Array(e.target.result);
                         const workbook = XLSX.read(data, { type: 'array' });
-                        const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-                        const jsonData = XLSX.utils.sheet_to_json(firstSheet, { header: 1, defval: "" });
+                        const sheet = workbook.Sheets[workbook.SheetNames[0]];
+                        const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: "" });
                         
                         if (jsonData.length < 2) {
-                            throw new Error('File appears to be empty');
+                            throw new Error('File appears empty');
                         }
 
                         const headers = jsonData[0];
@@ -753,172 +704,159 @@
                         this[type + 'Data'] = rows.map(row => {
                             const obj = {};
                             headers.forEach((header, index) => {
-                                obj[String(header).trim()] = row[index] !== undefined ? row[index] : '';
+                                obj[String(header).trim()] = row[index] || '';
                             });
                             return obj;
                         }).filter(row => Object.values(row).some(val => val !== ''));
 
-                        this.updateFileStatus(type, 'success', `✅ Loaded ${this[type + 'Data'].length} rows`);
-                        this.checkReadyToProcess();
+                        this.updateFileStatus(type, 'success', '✅ Loaded ' + this[type + 'Data'].length + ' rows');
+                        this.checkReady();
                     } catch (error) {
                         this.updateFileStatus(type, 'error', error.message);
-                        this.showError(`Error processing Excel file: ${error.message}`);
+                        this.showError('Excel error: ' + error.message);
                     }
                 };
-                reader.onerror = () => this.updateFileStatus(type, 'error', 'Failed to read file');
                 reader.readAsArrayBuffer(file);
             }
 
-            processCSVFile(file, type) {
+            processCSV(file, type) {
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     try {
                         const csv = e.target.result;
                         const parsed = Papa.parse(csv, {
                             header: true,
-                            skipEmptyLines: true,
-                            delimiter: ',',
-                            quoteChar: '"'
+                            skipEmptyLines: true
                         });
 
                         this[type + 'Data'] = parsed.data.filter(row => 
                             Object.values(row).some(val => val !== null && val !== '')
                         );
 
-                        this.updateFileStatus(type, 'success', `✅ Loaded ${this[type + 'Data'].length} rows`);
-                        this.checkReadyToProcess();
+                        this.updateFileStatus(type, 'success', '✅ Loaded ' + this[type + 'Data'].length + ' rows');
+                        this.checkReady();
                     } catch (error) {
                         this.updateFileStatus(type, 'error', error.message);
-                        this.showError(`Error processing CSV file: ${error.message}`);
+                        this.showError('CSV error: ' + error.message);
                     }
                 };
-                reader.onerror = () => this.updateFileStatus(type, 'error', 'Failed to read file');
                 reader.readAsText(file);
             }
 
-            checkReadyToProcess() {
-                const hasAllFiles = this.salesData.length > 0 && 
-                                  this.trafficData.length > 0 && 
-                                  this.inventoryData.length > 0;
+            checkReady() {
+                const ready = this.salesData.length > 0 && 
+                             this.trafficData.length > 0 && 
+                             this.inventoryData.length > 0;
                 
-                const processBtn = document.getElementById('processBtn');
-                if (processBtn) processBtn.disabled = !hasAllFiles;
+                const btn = document.getElementById('processBtn');
+                if (btn) btn.disabled = !ready;
                 
-                if (hasAllFiles) {
-                    this.showSuccess('All files loaded successfully! Ready to process data.');
+                if (ready) {
+                    this.showSuccess('Ready to process!');
                 }
             }
 
             processData() {
-                const loadingDiv = document.getElementById('loading');
+                const loading = document.getElementById('loading');
                 const dashboard = document.getElementById('dashboard');
                 const exportSection = document.getElementById('exportSection');
 
-                if (loadingDiv) loadingDiv.style.display = 'block';
+                if (loading) loading.style.display = 'block';
                 if (dashboard) dashboard.classList.remove('show');
                 if (exportSection) exportSection.classList.remove('show');
                 
                 setTimeout(() => {
                     try {
-                        this.processedData = this.mergeAndCalculateMetrics();
+                        this.processedData = this.mergeData();
                         
                         if (this.processedData.length === 0) {
-                            throw new Error('No matching data found between files');
+                            throw new Error('No data to process');
                         }
 
                         this.updateDashboard();
                         this.createCharts();
                         this.populateTable();
-                        this.populateSummaryInsights();
+                        this.populateInsights();
                         
-                        if (loadingDiv) loadingDiv.style.display = 'none';
+                        if (loading) loading.style.display = 'none';
                         if (dashboard) dashboard.classList.add('show');
                         if (exportSection) exportSection.classList.add('show');
                         
-                        this.attachExportListeners();
-                        this.showSuccess(`Dashboard generated successfully with ${this.processedData.length} products!`);
+                        this.bindExportEvents();
+                        this.showSuccess('Dashboard ready with ' + this.processedData.length + ' products!');
                     } catch (error) {
-                        if (loadingDiv) loadingDiv.style.display = 'none';
-                        this.showError(`Processing failed: ${error.message}`);
-                        console.error('Processing error:', error);
+                        if (loading) loading.style.display = 'none';
+                        this.showError('Processing failed: ' + error.message);
                     }
                 }, 100);
             }
 
-            mergeAndCalculateMetrics() {
+            mergeData() {
                 const merged = [];
                 
-                try {
-                    const trafficMap = new Map();
-                    this.trafficData.forEach(row => {
-                        if (row.ASIN) trafficMap.set(String(row.ASIN), row);
+                const trafficMap = new Map();
+                this.trafficData.forEach(row => {
+                    if (row.ASIN) trafficMap.set(String(row.ASIN), row);
+                });
+
+                const inventoryMap = new Map();
+                this.inventoryData.forEach(row => {
+                    if (row.ASIN) inventoryMap.set(String(row.ASIN), row);
+                });
+
+                this.salesData.forEach(salesRow => {
+                    if (!salesRow.ASIN) return;
+
+                    const asin = String(salesRow.ASIN);
+                    const trafficRow = trafficMap.get(asin) || {};
+                    const inventoryRow = inventoryMap.get(asin) || {};
+
+                    const orderedUnits = this.parseNum(salesRow['Ordered units']) || 0;
+                    const orderedRevenue = this.parseCurrency(salesRow['Ordered revenue']) || 0;
+                    const dispatchedRevenue = this.parseCurrency(salesRow['Dispatched revenue']) || 0;
+                    const dispatchedCOGS = this.parseCurrency(salesRow['Dispatched COGS']) || 0;
+                    const dispatchedUnits = this.parseNum(salesRow['Dispatched units']) || 0;
+                    const pageViews = this.parseNum(trafficRow['Featured offer page views']) || 0;
+                    const leadTime = this.parseNum(inventoryRow['Overall Vendor Lead Time (days)']) || 0;
+                    
+                    if (orderedUnits === 0 && orderedRevenue === 0) return;
+                    
+                    const conversionRate = pageViews > 0 ? (orderedUnits / pageViews) * 100 : 0;
+                    const dailySales = orderedRevenue / this.daysInMonth;
+                    const netPPM = dispatchedRevenue > 0 ? ((dispatchedRevenue - dispatchedCOGS) / dispatchedRevenue) * 100 : 0;
+                    const shipRate = orderedUnits > 0 ? (dispatchedUnits / orderedUnits) * 100 : 0;
+
+                    const orderedRevenueYoY = this.parseYoY(salesRow['Ordered Revenue – Same Period Last Year (%)']);
+                    const orderedUnitsYoY = this.parseYoY(salesRow['Ordered Units – Same Period Last Year (%)']);
+                    const pageViewsYoY = this.parseYoY(trafficRow['Featured offer page views – Same Period Last Year (%)']);
+                    const leadTimeYoY = this.parseYoY(inventoryRow['Overall Vendor Lead Time (days) – Same Period Last Year (%)']);
+
+                    merged.push({
+                        asin: salesRow.ASIN,
+                        productTitle: salesRow['Product title'] || '',
+                        brand: salesRow.Brand || '',
+                        orderedUnits,
+                        orderedRevenue,
+                        dispatchedRevenue,
+                        dispatchedCOGS,
+                        dispatchedUnits,
+                        pageViews,
+                        conversionRate,
+                        dailySales,
+                        netPPM,
+                        leadTime,
+                        shipRate,
+                        orderedRevenueYoY,
+                        orderedUnitsYoY,
+                        pageViewsYoY,
+                        leadTimeYoY
                     });
+                });
 
-                    const inventoryMap = new Map();
-                    this.inventoryData.forEach(row => {
-                        if (row.ASIN) inventoryMap.set(String(row.ASIN), row);
-                    });
-
-                    this.salesData.forEach(salesRow => {
-                        try {
-                            if (!salesRow.ASIN) return;
-
-                            const asinKey = String(salesRow.ASIN);
-                            const trafficRow = trafficMap.get(asinKey) || {};
-                            const inventoryRow = inventoryMap.get(asinKey) || {};
-
-                            const orderedUnits = this.parseNumber(salesRow['Ordered units']) || 0;
-                            const orderedRevenue = this.parseCurrency(salesRow['Ordered revenue']) || 0;
-                            const dispatchedRevenue = this.parseCurrency(salesRow['Dispatched revenue']) || 0;
-                            const dispatchedCOGS = this.parseCurrency(salesRow['Dispatched COGS']) || 0;
-                            const dispatchedUnits = this.parseNumber(salesRow['Dispatched units']) || 0;
-                            const pageViews = this.parseNumber(trafficRow['Featured offer page views']) || 0;
-                            const vendorLeadTime = this.parseNumber(inventoryRow['Overall Vendor Lead Time (days)']) || 0;
-                            
-                            const conversionRate = pageViews > 0 ? (orderedUnits / pageViews) * 100 : 0;
-                            const dailySales = orderedRevenue / this.daysInMonth;
-                            const netPPM = dispatchedRevenue > 0 ? ((dispatchedRevenue - dispatchedCOGS) / dispatchedRevenue) * 100 : 0;
-                            const shipRate = orderedUnits > 0 ? (dispatchedUnits / orderedUnits) * 100 : 0;
-
-                            // YoY calculations
-                            const orderedRevenueYoY = this.parseYoY(salesRow['Ordered Revenue – Same Period Last Year (%)']);
-                            const orderedUnitsYoY = this.parseYoY(salesRow['Ordered Units – Same Period Last Year (%)']);
-                            const pageViewsYoY = this.parseYoY(trafficRow['Featured offer page views – Same Period Last Year (%)']);
-                            const leadTimeYoY = this.parseYoY(inventoryRow['Overall Vendor Lead Time (days) – Same Period Last Year (%)']);
-
-                            merged.push({
-                                asin: salesRow.ASIN,
-                                productTitle: salesRow['Product title'] || '',
-                                brand: salesRow.Brand || '',
-                                orderedUnits,
-                                orderedRevenue,
-                                dispatchedRevenue,
-                                dispatchedCOGS,
-                                dispatchedUnits,
-                                pageViews,
-                                conversionRate,
-                                dailySales,
-                                netPPM,
-                                vendorLeadTime,
-                                shipRate,
-                                orderedRevenueYoY,
-                                orderedUnitsYoY,
-                                pageViewsYoY,
-                                leadTimeYoY
-                            });
-                        } catch (error) {
-                            console.warn(`Error processing ASIN ${salesRow.ASIN}:`, error);
-                        }
-                    });
-
-                    return merged.sort((a, b) => b.orderedRevenue - a.orderedRevenue);
-                } catch (error) {
-                    console.error('Error in mergeAndCalculateMetrics:', error);
-                    throw error;
-                }
+                return merged.sort((a, b) => b.orderedRevenue - a.orderedRevenue);
             }
 
-            parseNumber(value) {
+            parseNum(value) {
                 if (!value) return 0;
                 return parseInt(String(value).replace(/[,]/g, '')) || 0;
             }
@@ -930,56 +868,45 @@
 
             parseYoY(value) {
                 if (!value || value === '' || value === null) return null;
-                const numValue = parseFloat(value);
-                if (isNaN(numValue)) return null;
-                
-                // Handle decimal format (-0.5291 = -52.91%)
-                if (Math.abs(numValue) <= 1) {
-                    return numValue * 100;
-                }
-                return numValue;
+                const num = parseFloat(value);
+                if (isNaN(num)) return null;
+                return Math.abs(num) <= 1 ? num * 100 : num;
             }
 
-            formatYoYChange(value) {
-                if (value === null || value === undefined) return 'No data';
-                const formattedValue = value > 0 ? `+${value.toFixed(1)}%` : `${value.toFixed(1)}%`;
+            formatYoY(value) {
+                if (value === null) return 'No data';
+                const formatted = value > 0 ? '+' + value.toFixed(1) + '%' : value.toFixed(1) + '%';
                 const className = value > 0 ? 'positive' : value < 0 ? 'negative' : 'neutral';
-                return `<span class="${className}">${formattedValue}</span>`;
+                return '<span class="' + className + '">' + formatted + '</span>';
             }
 
             updateDashboard() {
-                try {
-                    const totals = this.calculateTotals();
-                    
-                    this.updateElement('orderedUnits', totals.orderedUnits.toLocaleString());
-                    this.updateElement('orderedRevenue', `£${totals.orderedRevenue.toLocaleString()}`);
-                    this.updateElement('pageViews', totals.pageViews.toLocaleString());
-                    this.updateElement('conversionRate', `${totals.conversionRate.toFixed(2)}%`);
-                    this.updateElement('dailySales', `£${totals.dailySales.toLocaleString()}`);
-                    this.updateElement('netPPM', `${totals.netPPM.toFixed(1)}%`);
-                    this.updateElement('vendorLeadTime', `${totals.vendorLeadTime.toFixed(1)} days`);
-                    this.updateElement('shippedUnits', totals.shippedUnits.toLocaleString());
-                    this.updateElement('shipRate', `${totals.shipRate.toFixed(1)}%`);
+                const totals = this.calculateTotals();
+                
+                this.updateElement('orderedUnits', totals.orderedUnits.toLocaleString());
+                this.updateElement('orderedRevenue', '£' + totals.orderedRevenue.toLocaleString());
+                this.updateElement('pageViews', totals.pageViews.toLocaleString());
+                this.updateElement('conversionRate', totals.conversionRate.toFixed(2) + '%');
+                this.updateElement('dailySales', '£' + totals.dailySales.toLocaleString());
+                this.updateElement('netPPM', totals.netPPM.toFixed(1) + '%');
+                this.updateElement('vendorLeadTime', totals.leadTime.toFixed(1) + ' days');
+                this.updateElement('shippedUnits', totals.shippedUnits.toLocaleString());
+                this.updateElement('shipRate', totals.shipRate.toFixed(1) + '%');
 
-                    // Update YoY changes
-                    this.updateElementHTML('orderedUnitsChange', this.formatYoYChange(totals.orderedUnitsYoY));
-                    this.updateElementHTML('orderedRevenueChange', this.formatYoYChange(totals.orderedRevenueYoY));
-                    this.updateElementHTML('pageViewsChange', this.formatYoYChange(totals.pageViewsYoY));
-                    this.updateElementHTML('vendorLeadTimeChange', this.formatYoYChange(totals.leadTimeYoY));
-
-                } catch (error) {
-                    console.error('Error updating dashboard:', error);
-                }
+                this.updateElementHTML('orderedUnitsChange', this.formatYoY(totals.orderedUnitsYoY));
+                this.updateElementHTML('orderedRevenueChange', this.formatYoY(totals.orderedRevenueYoY));
+                this.updateElementHTML('pageViewsChange', this.formatYoY(totals.pageViewsYoY));
+                this.updateElementHTML('vendorLeadTimeChange', this.formatYoY(totals.leadTimeYoY));
             }
 
             updateElement(id, value) {
-                const element = document.getElementById(id);
-                if (element) element.textContent = value;
+                const el = document.getElementById(id);
+                if (el) el.textContent = value;
             }
 
             updateElementHTML(id, html) {
-                const element = document.getElementById(id);
-                if (element) element.innerHTML = html;
+                const el = document.getElementById(id);
+                if (el) el.innerHTML = html;
             }
 
             calculateTotals() {
@@ -989,15 +916,17 @@
                     pageViews: 0,
                     dailySales: 0,
                     shippedUnits: 0,
-                    vendorLeadTime: 0,
+                    leadTime: 0,
                     orderedUnitsYoY: null,
                     orderedRevenueYoY: null,
                     pageViewsYoY: null,
                     leadTimeYoY: null
                 };
 
-                let validYoYCount = { units: 0, revenue: 0, pageViews: 0, leadTime: 0 };
-                let yoyTotals = { units: 0, revenue: 0, pageViews: 0, leadTime: 0 };
+                let yoyData = { units: 0, revenue: 0, pageViews: 0, leadTime: 0 };
+                let yoyCount = { units: 0, revenue: 0, pageViews: 0, leadTime: 0 };
+                let leadTimeSum = 0;
+                let leadTimeWeight = 0;
 
                 this.processedData.forEach(item => {
                     totals.orderedUnits += item.orderedUnits;
@@ -1006,46 +935,43 @@
                     totals.dailySales += item.dailySales;
                     totals.shippedUnits += item.dispatchedUnits;
                     
-                    // Weighted average for lead time
-                    if (item.vendorLeadTime > 0 && item.orderedRevenue > 0) {
-                        totals.vendorLeadTime += item.vendorLeadTime * item.orderedRevenue;
+                    if (item.leadTime > 0 && item.orderedRevenue > 0) {
+                        leadTimeSum += item.leadTime * item.orderedRevenue;
+                        leadTimeWeight += item.orderedRevenue;
                     }
 
-                    // YoY calculations
-                    if (item.orderedUnitsYoY !== null) {
-                        yoyTotals.units += item.orderedUnitsYoY * item.orderedUnits;
-                        validYoYCount.units += item.orderedUnits;
+                    if (item.orderedUnitsYoY !== null && item.orderedRevenue > 0) {
+                        yoyData.units += item.orderedUnitsYoY * item.orderedRevenue;
+                        yoyCount.units += item.orderedRevenue;
                     }
-                    if (item.orderedRevenueYoY !== null) {
-                        yoyTotals.revenue += item.orderedRevenueYoY * item.orderedRevenue;
-                        validYoYCount.revenue += item.orderedRevenue;
+                    if (item.orderedRevenueYoY !== null && item.orderedRevenue > 0) {
+                        yoyData.revenue += item.orderedRevenueYoY * item.orderedRevenue;
+                        yoyCount.revenue += item.orderedRevenue;
                     }
-                    if (item.pageViewsYoY !== null) {
-                        yoyTotals.pageViews += item.pageViewsYoY * item.pageViews;
-                        validYoYCount.pageViews += item.pageViews;
+                    if (item.pageViewsYoY !== null && item.pageViews > 0) {
+                        yoyData.pageViews += item.pageViewsYoY * item.pageViews;
+                        yoyCount.pageViews += item.pageViews;
                     }
                     if (item.leadTimeYoY !== null && item.orderedRevenue > 0) {
-                        yoyTotals.leadTime += item.leadTimeYoY * item.orderedRevenue;
-                        validYoYCount.leadTime += item.orderedRevenue;
+                        yoyData.leadTime += item.leadTimeYoY * item.orderedRevenue;
+                        yoyCount.leadTime += item.orderedRevenue;
                     }
                 });
 
-                // Calculate weighted averages
                 totals.conversionRate = totals.pageViews > 0 ? (totals.orderedUnits / totals.pageViews) * 100 : 0;
-                totals.netPPM = this.calculateWeightedNetPPM();
+                totals.netPPM = this.calculateNetPPM();
                 totals.shipRate = totals.orderedUnits > 0 ? (totals.shippedUnits / totals.orderedUnits) * 100 : 0;
-                totals.vendorLeadTime = totals.orderedRevenue > 0 ? totals.vendorLeadTime / totals.orderedRevenue : 0;
+                totals.leadTime = leadTimeWeight > 0 ? leadTimeSum / leadTimeWeight : 0;
 
-                // Calculate YoY averages
-                totals.orderedUnitsYoY = validYoYCount.units > 0 ? yoyTotals.units / validYoYCount.units : null;
-                totals.orderedRevenueYoY = validYoYCount.revenue > 0 ? yoyTotals.revenue / validYoYCount.revenue : null;
-                totals.pageViewsYoY = validYoYCount.pageViews > 0 ? yoyTotals.pageViews / validYoYCount.pageViews : null;
-                totals.leadTimeYoY = validYoYCount.leadTime > 0 ? yoyTotals.leadTime / validYoYCount.leadTime : null;
+                totals.orderedUnitsYoY = yoyCount.units > 0 ? yoyData.units / yoyCount.units : null;
+                totals.orderedRevenueYoY = yoyCount.revenue > 0 ? yoyData.revenue / yoyCount.revenue : null;
+                totals.pageViewsYoY = yoyCount.pageViews > 0 ? yoyData.pageViews / yoyCount.pageViews : null;
+                totals.leadTimeYoY = yoyCount.leadTime > 0 ? yoyData.leadTime / yoyCount.leadTime : null;
 
                 return totals;
             }
 
-            calculateWeightedNetPPM() {
+            calculateNetPPM() {
                 let totalRevenue = 0;
                 let totalProfit = 0;
 
@@ -1057,34 +983,38 @@
                 return totalRevenue > 0 ? (totalProfit / totalRevenue) * 100 : 0;
             }
 
-            populateSummaryInsights() {
-                try {
-                    const avgConversionRate = this.processedData.reduce((sum, item) => sum + item.conversionRate, 0) / this.processedData.length;
-                    const totalRevenue = this.processedData.reduce((sum, item) => sum + item.orderedRevenue, 0);
+            populateInsights() {
+                const avgConversion = this.processedData.reduce((sum, item) => sum + item.conversionRate, 0) / this.processedData.length;
+                
+                const allPageViews = this.processedData.map(item => item.pageViews).filter(pv => pv > 0).sort((a, b) => a - b);
+                const medianPageViews = allPageViews[Math.floor(allPageViews.length / 2)] || 0;
 
-                    // Top Converting (15% above average)
-                    const topConverting = this.processedData
-                        .filter(item => item.conversionRate > avgConversionRate * 1.15)
-                        .slice(0, 5);
+                const topConverting = this.processedData
+                    .filter(item => item.conversionRate > avgConversion * 1.15)
+                    .slice(0, 20);
 
-                    // Revenue Recovery Opportunities (>=2% revenue AND below average conversion)
-                    const revenueRecovery = this.processedData
-                        .filter(item => {
-                            const revenuePercent = (item.orderedRevenue / totalRevenue) * 100;
-                            return revenuePercent >= 2 && item.conversionRate < avgConversionRate;
-                        })
-                        .slice(0, 5);
+                const revenueRecovery = this.processedData
+                    .filter(item => {
+                        return item.conversionRate < avgConversion && 
+                               item.orderedRevenue >= 1000 && 
+                               item.pageViews > medianPageViews;
+                    })
+                    .sort((a, b) => b.orderedRevenue - a.orderedRevenue)
+                    .slice(0, 20);
 
-                    // Top Revenue Products
-                    const topRevenue = this.processedData.slice(0, 5);
-
-                    this.populateList('topConvertingList', topConverting, 'conversion');
-                    this.populateList('revenueRecoveryList', revenueRecovery, 'recovery');
-                    this.populateList('topRevenueList', topRevenue, 'revenue');
-
-                } catch (error) {
-                    console.error('Error populating summary insights:', error);
+                if (revenueRecovery.length === 0) {
+                    const fallback = this.processedData
+                        .filter(item => item.conversionRate < avgConversion && item.orderedRevenue >= 1000)
+                        .sort((a, b) => b.orderedRevenue - a.orderedRevenue)
+                        .slice(0, 1);
+                    revenueRecovery.push(...fallback);
                 }
+
+                const topRevenue = this.processedData.slice(0, 20);
+
+                this.populateList('topConvertingList', topConverting, 'conversion');
+                this.populateList('revenueRecoveryList', revenueRecovery, 'recovery');
+                this.populateList('topRevenueList', topRevenue, 'revenue');
             }
 
             populateList(listId, items, type) {
@@ -1095,7 +1025,7 @@
                 
                 if (items.length === 0) {
                     const li = document.createElement('li');
-                    li.textContent = 'No products meet the criteria';
+                    li.textContent = 'No products meet criteria';
                     list.appendChild(li);
                     return;
                 }
@@ -1106,36 +1036,26 @@
                         item.productTitle.substring(0, 40) + '...' : 
                         item.productTitle;
                     
-                    switch (type) {
-                        case 'conversion':
-                            li.textContent = `${title} (${item.conversionRate.toFixed(2)}%)`;
-                            break;
-                        case 'recovery':
-                            li.textContent = `${title} (£${item.orderedRevenue.toLocaleString()}, ${item.conversionRate.toFixed(2)}%)`;
-                            break;
-                        case 'revenue':
-                            li.textContent = `${title} (£${item.orderedRevenue.toLocaleString()})`;
-                            break;
+                    if (type === 'conversion') {
+                        li.textContent = title + ' (' + item.conversionRate.toFixed(2) + '%)';
+                    } else if (type === 'recovery') {
+                        li.textContent = title + ' (£' + item.orderedRevenue.toLocaleString() + ', ' + item.conversionRate.toFixed(2) + '%)';
+                    } else {
+                        li.textContent = title + ' (£' + item.orderedRevenue.toLocaleString() + ')';
                     }
                     list.appendChild(li);
                 });
             }
 
             createCharts() {
-                try {
-                    this.destroyExistingCharts();
-                    this.createRevenueChart();
-                    this.createProductsChart();
-                } catch (error) {
-                    console.error('Error creating charts:', error);
-                }
+                this.destroyCharts();
+                this.createRevenueChart();
+                this.createProductsChart();
             }
 
-            destroyExistingCharts() {
+            destroyCharts() {
                 Object.values(this.charts).forEach(chart => {
-                    if (chart && typeof chart.destroy === 'function') {
-                        chart.destroy();
-                    }
+                    if (chart && chart.destroy) chart.destroy();
                 });
                 this.charts = {};
             }
@@ -1152,7 +1072,7 @@
                         labels: topProducts.map(p => p.productTitle.length > 30 ? 
                             p.productTitle.substring(0, 30) + '...' : p.productTitle),
                         datasets: [{
-                            label: 'Revenue (£)',
+                            label: 'Revenue',
                             data: topProducts.map(p => p.orderedRevenue),
                             backgroundColor: 'rgba(34, 139, 34, 0.7)',
                             borderColor: 'rgba(34, 139, 34, 1)',
@@ -1163,9 +1083,7 @@
                         responsive: true,
                         maintainAspectRatio: false,
                         plugins: {
-                            legend: {
-                                display: false
-                            }
+                            legend: { display: false }
                         },
                         scales: {
                             y: {
@@ -1177,9 +1095,7 @@
                                 }
                             },
                             x: {
-                                ticks: {
-                                    maxRotation: 45
-                                }
+                                ticks: { maxRotation: 45 }
                             }
                         }
                     }
@@ -1222,50 +1138,61 @@
             }
 
             populateTable() {
-                try {
-                    const tbody = document.getElementById('performanceTableBody');
-                    if (!tbody) return;
+                const tbody = document.getElementById('performanceTableBody');
+                if (!tbody) return;
 
-                    tbody.innerHTML = '';
+                tbody.innerHTML = '';
+                const limitedData = this.processedData.slice(0, 50);
 
-                    this.processedData.forEach(item => {
-                        const row = document.createElement('tr');
-                        
-                        const cells = [
-                            item.asin,
-                            item.productTitle.length > 40 ? item.productTitle.substring(0, 40) + '...' : item.productTitle,
-                            item.orderedUnits.toLocaleString(),
-                            `£${item.orderedRevenue.toLocaleString()}`,
-                            item.pageViews.toLocaleString(),
-                            `${item.conversionRate.toFixed(2)}%`,
-                            `£${item.dailySales.toFixed(2)}`,
-                            item.dispatchedUnits.toLocaleString(),
-                            `${item.shipRate.toFixed(1)}%`,
-                            `${item.vendorLeadTime.toFixed(1)}`,
-                            `${item.netPPM.toFixed(1)}%`
-                        ];
+                limitedData.forEach(item => {
+                    const row = document.createElement('tr');
+                    
+                    const cells = [
+                        item.asin,
+                        item.productTitle.length > 40 ? item.productTitle.substring(0, 40) + '...' : item.productTitle,
+                        item.orderedUnits.toLocaleString(),
+                        '£' + item.orderedRevenue.toLocaleString(),
+                        item.pageViews.toLocaleString(),
+                        item.conversionRate.toFixed(2) + '%',
+                        '£' + item.dailySales.toFixed(2),
+                        item.dispatchedUnits.toLocaleString(),
+                        item.shipRate.toFixed(1) + '%',
+                        item.leadTime.toFixed(1),
+                        item.netPPM.toFixed(1) + '%'
+                    ];
 
-                        cells.forEach(cellData => {
-                            const cell = document.createElement('td');
-                            cell.textContent = cellData;
-                            row.appendChild(cell);
-                        });
-
-                        tbody.appendChild(row);
+                    cells.forEach(cellData => {
+                        const cell = document.createElement('td');
+                        cell.textContent = cellData;
+                        row.appendChild(cell);
                     });
-                } catch (error) {
-                    console.error('Error populating table:', error);
+
+                    tbody.appendChild(row);
+                });
+
+                if (this.processedData.length > 50) {
+                    const tableContainer = document.querySelector('.data-table');
+                    if (tableContainer) {
+                        const existingNote = tableContainer.querySelector('.table-limit-note');
+                        if (existingNote) existingNote.remove();
+                        
+                        const note = document.createElement('p');
+                        note.className = 'table-limit-note';
+                        note.style.cssText = 'margin-top: 10px; font-style: italic; color: #666; text-align: center;';
+                        note.textContent = 'Showing top 50 of ' + this.processedData.length + ' products. Export for full data.';
+                        tableContainer.appendChild(note);
+                    }
                 }
             }
 
-            exportToExcel() {
+            exportExcel() {
                 try {
                     if (!XLSX) {
-                        this.showError('Excel export library not loaded');
+                        this.showError('Excel library not loaded');
                         return;
                     }
 
-                    const ws = XLSX.utils.json_to_sheet(this.processedData.map(item => ({
+                    const data = this.processedData.map(item => ({
                         'ASIN': item.asin,
                         'Product Title': item.productTitle,
                         'Ordered Units': item.orderedUnits,
@@ -1275,21 +1202,22 @@
                         'Daily Sales': item.dailySales.toFixed(2),
                         'Shipped Units': item.dispatchedUnits,
                         'Ship Rate %': item.shipRate.toFixed(1),
-                        'Lead Time Days': item.vendorLeadTime.toFixed(1),
+                        'Lead Time Days': item.leadTime.toFixed(1),
                         'Net PPM %': item.netPPM.toFixed(1)
-                    })));
+                    }));
 
+                    const ws = XLSX.utils.json_to_sheet(data);
                     const wb = XLSX.utils.book_new();
-                    XLSX.utils.book_append_sheet(wb, ws, 'Vendor Analysis');
-                    XLSX.writeFile(wb, 'vendor_central_analysis.xlsx');
+                    XLSX.utils.book_append_sheet(wb, ws, 'Analysis');
+                    XLSX.writeFile(wb, 'vendor_analysis.xlsx');
 
-                    this.showSuccess('Excel file exported successfully!');
+                    this.showSuccess('Excel exported successfully!');
                 } catch (error) {
-                    this.showError('Failed to export Excel file: ' + error.message);
+                    this.showError('Export failed: ' + error.message);
                 }
             }
 
-            exportToCSV() {
+            exportCSV() {
                 try {
                     const headers = ['ASIN', 'Product Title', 'Ordered Units', 'Ordered Revenue', 'Page Views', 
                                    'Conversion Rate %', 'Daily Sales', 'Shipped Units', 'Ship Rate %', 'Lead Time Days', 'Net PPM %'];
@@ -1305,37 +1233,28 @@
                             item.dailySales.toFixed(2),
                             item.dispatchedUnits,
                             item.shipRate.toFixed(1),
-                            item.vendorLeadTime.toFixed(1),
+                            item.leadTime.toFixed(1),
                             item.netPPM.toFixed(1)
                         ])
                     ).map(row => row.join(',')).join('\n');
 
                     const blob = new Blob([csvContent], { type: 'text/csv' });
-                    const url = window.URL.createObjectURL(blob);
+                    const url = URL.createObjectURL(blob);
                     const a = document.createElement('a');
                     a.href = url;
-                    a.download = 'vendor_central_analysis.csv';
+                    a.download = 'vendor_analysis.csv';
                     a.click();
-                    window.URL.revokeObjectURL(url);
+                    URL.revokeObjectURL(url);
 
-                    this.showSuccess('CSV file exported successfully!');
+                    this.showSuccess('CSV exported successfully!');
                 } catch (error) {
-                    this.showError('Failed to export CSV file: ' + error.message);
+                    this.showError('Export failed: ' + error.message);
                 }
-            }
-
-            exportToPDF() {
-                this.showError('PDF export requires additional library. Use Excel or CSV export instead.');
             }
         }
 
-        // Initialize dashboard when DOM is loaded
         document.addEventListener('DOMContentLoaded', () => {
-            try {
-                window.dashboard = new VendorCentralDashboard();
-            } catch (error) {
-                console.error('Failed to initialize dashboard:', error);
-            }
+            window.dashboard = new VendorDashboard();
         });
     </script>
 </body>
