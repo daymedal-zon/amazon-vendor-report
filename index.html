@@ -838,8 +838,22 @@
                             const dispatchedCOGS = this.parseNum(salesRow['Dispatched COGS']) || 0;
                             const pageViews = this.parseNum(trafficRow['Featured offer page views']) || 0;
                             const leadTime = this.parseNum(inventoryRow['Overall Vendor Lead Time (days)']) || 0;
-                            const sellableUnits = this.parseNum(inventoryRow['Sellable On Hand Units']) || 0;
-                            const aged90Units = this.parseNum(inventoryRow['Aged 90+ Days Sellable Units']) || 0;
+                            
+                            // Check multiple possible column name variations for sellable units
+                            const sellableUnits = this.parseNum(
+                                inventoryRow['Sellable On Hand Units'] || 
+                                inventoryRow['Sellable On-Hand Units'] ||
+                                inventoryRow['Sellable Inventory Units'] ||
+                                0
+                            );
+                            
+                            // Check multiple possible column name variations for aged 90+ units  
+                            const aged90Units = this.parseNum(
+                                inventoryRow['Aged 90+ Days Sellable Units'] ||
+                                inventoryRow['Aged 90+ Days Sellable Inventory'] ||
+                                inventoryRow['90+ Days Sellable Units'] ||
+                                0
+                            );
                             
                             const conversionRate = pageViews > 0 ? (orderedUnits / pageViews) * 100 : 0;
                             const dailySales = orderedRevenue / this.daysInMonth;
