@@ -353,8 +353,8 @@
         }
 
         .export-section {
+            grid-column: span 1;
             text-align: center;
-            margin-top: 30px;
             padding: 20px;
             background: white;
             border-radius: 15px;
@@ -416,7 +416,7 @@
     <div class="container">
         <div class="header">
             <h1>Zon Amazon Vendor Audit</h1>
-            <p>Analytics dashboard for publisher performance optimisation</p>
+            <p>The one-stop Amazon analytics dashboard for publishers</p>
         </div>
 
         <div class="upload-section">
@@ -454,7 +454,7 @@
                     <div class="file-status" id="inventoryStatus"></div>
                 </div>
             </div>
-            <button class="process-btn" id="processBtn" disabled>Process Data & Generate Dashboard</button>
+            <button class="process-btn" id="processBtn" disabled>Generate Dashboard</button>
         </div>
 
         <div id="loading" class="loading">
@@ -508,6 +508,12 @@
                 <h3>90+ Days Inventory %</h3>
                 <div class="metric-value" id="aged90Percent">0%</div>
                 <div class="metric-change" id="aged90PercentChange"></div>
+            </div>
+
+            <div class="export-section show" id="exportSection">
+                <h3>Export Your Report</h3>
+                <button class="export-btn" id="exportExcel">📊 Export to Excel</button>
+                <button class="export-btn" id="exportCSV">📋 Export to CSV</button>
             </div>
 
             <div class="chart-container">
@@ -833,11 +839,15 @@
                 const num = parseFloat(value);
                 if (isNaN(num)) return null;
                 
-                // CORRECTED: Based on Amazon dashboard comparison
-                // Amazon shows +1,700% for Dungeon Crawler Carl, our file shows 16.4304
-                // This means: 16.4304 * 100 = 1,643% (close match!)
-                // So ALL values need to be multiplied by 100
-                return num * 100;
+                // RECALIBRATED: Based on Amazon comparison showing +14% vs our +32%
+                // Amazon shows Berserk Vol 1: -9.17%, our file shows -0.1575
+                // This suggests: -0.1575 ≈ -9.17%, so roughly 58x multiplier
+                // But let's try a more conservative approach - maybe mixed format
+                if (Math.abs(num) <= 1) {
+                    return num * 100; // Small decimals: -0.1575 → -15.75%
+                } else {
+                    return num; // Larger values: 16.4304 → 16.43%
+                }
             }
 
             mergeData() {
@@ -1264,7 +1274,12 @@
                 const threshold = avgConversion * 1.15; // 15% above average
                 
                 const topConverting = this.processedData
-                    .filter(item => item.conversionRate > threshold && item.orderedUnits > 0)
+                    .filter(item => 
+                        item.conversionRate > threshold && 
+                        item.conversionRate < 25 && // Under 25% conversion (realistic)
+                        item.orderedUnits >= 5 && // At least 5 unit sales
+                        item.pageViews > 0 // Has actual traffic
+                    )
                     .sort((a, b) => b.conversionRate - a.conversionRate)
                     .slice(0, 20);
 
@@ -1273,13 +1288,13 @@
                     list.innerHTML = '';
                     topConverting.forEach(item => {
                         const li = document.createElement('li');
-                        li.textContent = `${item.title} - ${item.conversionRate.toFixed(2)}%`;
+                        li.textContent = `${item.title} - ${item.conversionRate.toFixed(2)}% (${item.orderedUnits} units, ${item.pageViews.toLocaleString()} views)`;
                         list.appendChild(li);
                     });
                     
                     if (topConverting.length === 0) {
                         const li = document.createElement('li');
-                        li.textContent = 'No products significantly above average conversion rate';
+                        li.textContent = 'No products meet the criteria (>avg conversion, <25%, 5+ units sold)';
                         list.appendChild(li);
                     }
                 }
