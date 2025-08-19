@@ -1416,14 +1416,17 @@
             }
 
             populateTopConverting() {
+                // Calculate adaptive threshold based on portfolio size
+                const totalUnits = this.processedData.reduce((sum, item) => sum + item.orderedUnits, 0);
+                const adaptiveThreshold = this.calculateAdaptiveThreshold(totalUnits);
                 const avgConversion = this.processedData.reduce((sum, item) => sum + item.conversionRate, 0) / this.processedData.length;
-                const threshold = avgConversion * 1.15; // 15% above average
+                const conversionThreshold = avgConversion * 1.15; // 15% above average
                 
                 const topConverting = this.processedData
                     .filter(item => 
-                        item.conversionRate > threshold && 
+                        item.conversionRate > conversionThreshold && 
                         item.conversionRate < 25 && // Under 25% conversion (realistic)
-                        item.orderedUnits >= 5 && // At least 5 unit sales
+                        item.orderedUnits >= adaptiveThreshold && // Adaptive unit threshold for scale
                         item.pageViews > 0 // Has actual traffic
                     )
                     .sort((a, b) => b.conversionRate - a.conversionRate)
@@ -1432,17 +1435,38 @@
                 const list = document.getElementById('topConvertingList');
                 if (list) {
                     list.innerHTML = '';
+                    
+                    // Add explanation of adaptive threshold
+                    const explanation = document.createElement('li');
+                    explanation.style.fontStyle = 'italic';
+                    explanation.style.color = '#666';
+                    explanation.textContent = `Showing products with ${adaptiveThreshold.toFixed(0)}+ units (${((adaptiveThreshold/totalUnits)*100).toFixed(2)}% of portfolio) for marketing scale`;
+                    list.appendChild(explanation);
+                    
                     topConverting.forEach(item => {
                         const li = document.createElement('li');
-                        li.textContent = `${item.title} - ${item.conversionRate.toFixed(2)}% (${item.orderedUnits} units, ${item.pageViews.toLocaleString()} views)`;
+                        const unitsPercent = ((item.orderedUnits / totalUnits) * 100).toFixed(2);
+                        li.textContent = `${item.title} - ${item.conversionRate.toFixed(2)}% CVR (${item.orderedUnits.toLocaleString()} units, ${unitsPercent}% of portfolio)`;
                         list.appendChild(li);
                     });
                     
                     if (topConverting.length === 0) {
                         const li = document.createElement('li');
-                        li.textContent = 'No products meet the criteria (>avg conversion, <25%, 5+ units sold)';
+                        li.textContent = `No products meet criteria (>avg CVR, <25%, ${adaptiveThreshold.toFixed(0)}+ units for marketing scale)`;
                         list.appendChild(li);
                     }
+                }
+            }
+
+            calculateAdaptiveThreshold(totalUnits) {
+                if (totalUnits > 50000) {
+                    return Math.max(totalUnits * 0.001, 50); // 0.1% or 50 units minimum for very large portfolios
+                } else if (totalUnits > 10000) {
+                    return Math.max(totalUnits * 0.005, 25); // 0.5% or 25 units minimum for large portfolios  
+                } else if (totalUnits > 1000) {
+                    return Math.max(totalUnits * 0.01, 10); // 1% or 10 units minimum for medium portfolios
+                } else {
+                    return Math.max(totalUnits * 0.02, 5); // 2% or 5 units minimum for small portfolios
                 }
             }
 
