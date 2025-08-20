@@ -301,12 +301,14 @@
         }
 
         .metric-value {
-            font-size: 2.8rem;
+            font-size: 2.4rem;
             font-weight: 900;
             color: #00FF7F;
             margin-bottom: 15px;
             font-family: 'Orbitron', monospace;
             text-shadow: 0 0 20px rgba(0, 255, 127, 0.5);
+            line-height: 1.1;
+            word-break: break-all;
         }
 
         .metric-change {
@@ -491,12 +493,14 @@
             border: none;
             padding: 12px 20px;
             border-radius: 12px;
-            margin: 8px;
+            margin: 5px 15px;
             cursor: pointer;
             font-weight: 600;
             transition: all 0.3s ease;
             font-family: 'Inter', sans-serif;
             box-shadow: 0 8px 20px rgba(0, 127, 95, 0.3);
+            display: block;
+            width: 180px;
         }
 
         .export-btn:hover {
@@ -1298,10 +1302,10 @@
                     
                     // Update metric cards
                     this.updateElement('orderedUnits', totals.orderedUnits.toLocaleString());
-                    this.updateElement('orderedRevenue', '£' + totals.orderedRevenue.toLocaleString());
+                    this.updateElement('orderedRevenue', '£' + Math.round(totals.orderedRevenue).toLocaleString());
                     this.updateElement('pageViews', totals.pageViews.toLocaleString());
                     this.updateElement('conversionRate', totals.conversionRate.toFixed(2) + '%');
-                    this.updateElement('dailySales', '£' + totals.dailySales.toLocaleString());
+                    this.updateElement('dailySales', '£' + Math.round(totals.dailySales).toLocaleString());
                     this.updateElement('netPPM', totals.netPPM.toFixed(1) + '%');
                     this.updateElement('vendorLeadTime', totals.leadTime.toFixed(0) + ' days');
                     this.updateElement('aged90Percent', totals.aged90Percent.toFixed(1) + '%');
