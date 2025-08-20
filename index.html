@@ -722,7 +722,7 @@
                     </div>
                     <div class="summary-card">
                         <h4>💰 Revenue Recovery Opportunities</h4>
-                        <p>High aged inventory (15%+) with below-average conversion - clearing these accelerates account growth</p>
+                        <p>High-impact products (£1k+) with conversion gaps and/or aged inventory - includes stock risk analysis</p>
                         <ul class="summary-list" id="revenueRecoveryList"></ul>
                     </div>
                     <div class="summary-card">
@@ -1678,60 +1678,65 @@
                 const avgConversion = this.processedData.reduce((sum, item) => sum + item.conversionRate, 0) / this.processedData.length;
                 const totalRevenue = this.processedData.reduce((sum, item) => sum + item.orderedRevenue, 0);
                 
-                // Enhanced criteria for revenue recovery with aged inventory focus
+                // REVENUE RECOVERY MATRIX - Focus on high-impact opportunities
                 let recoveryOpportunities = this.processedData
                     .filter(item => 
-                        item.conversionRate < avgConversion && // Below average conversion
-                        item.aged90Percent > 15 && // High aged inventory (>15%)
-                        item.orderedRevenue > 0 && // Has revenue
+                        item.orderedRevenue >= 1000 && // Minimum £1k revenue for impact
                         item.pageViews > 0 // Has traffic to optimize
                     )
                     .map(item => {
-                        // Calculate priority score: Higher aged inventory % + higher revenue = higher priority
-                        const revenueScore = (item.orderedRevenue / totalRevenue) * 100; // % of total revenue
-                        const agedInventoryScore = item.aged90Percent; // % of aged inventory
-                        const conversionGap = avgConversion - item.conversionRate; // How far below average
+                        // Distance from average conversion (normalized 0-1)
+                        const conversionGap = Math.max(0, avgConversion - item.conversionRate);
+                        const conversionGapNormalized = conversionGap / avgConversion;
                         
-                        // Weighted scoring: aged inventory is high priority, revenue provides scale
-                        const priorityScore = (agedInventoryScore * 2) + revenueScore + (conversionGap * 0.5);
+                        // Revenue impact (% of total portfolio)
+                        const revenueImpact = (item.orderedRevenue / totalRevenue) * 100;
+                        
+                        // Aged inventory score (0-1)
+                        const agedInventoryScore = item.aged90Percent / 100;
+                        
+                        // Calculate days of stock remaining
+                        const dailySalesUnits = item.orderedUnits / this.daysInPeriod;
+                        const stockDays = dailySalesUnits > 0 ? item.sellableUnits / dailySalesUnits : null;
+                        const riskDays = stockDays !== null ? stockDays - item.leadTime : null;
+                        const stockRisk = riskDays !== null ? (
+                            riskDays <= 0 ? 'CRITICAL' :
+                            riskDays <= 7 ? 'HIGH' :
+                            riskDays <= 14 ? 'MEDIUM' : 'LOW'
+                        ) : 'UNKNOWN';
+                        
+                        // MATRIX SCORE: Prioritizes high-revenue products with conversion gaps OR aged inventory
+                        const matrixScore = (conversionGapNormalized * revenueImpact) + (agedInventoryScore * revenueImpact);
                         
                         return {
                             ...item,
-                            revenueScore,
-                            agedInventoryScore,
                             conversionGap,
-                            priorityScore
+                            revenueImpact,
+                            agedInventoryScore,
+                            matrixScore,
+                            stockDays,
+                            riskDays,
+                            stockRisk
                         };
                     })
-                    .sort((a, b) => b.priorityScore - a.priorityScore)
-                    .slice(0, 20);
+                    .sort((a, b) => b.matrixScore - a.matrixScore)
+                    .slice(0, 15); // Top 15 opportunities
 
-                // Fallback: if no high aged inventory opportunities, use traditional criteria
+                // Fallback if no high-impact opportunities
                 if (recoveryOpportunities.length < 3) {
-                    const pageViews = this.processedData.map(item => item.pageViews).filter(pv => pv > 0);
-                    const medianPageViews = pageViews.sort((a, b) => a - b)[Math.floor(pageViews.length / 2)] || 0;
-                    
-                    const traditionalOpportunities = this.processedData
+                    recoveryOpportunities = this.processedData
                         .filter(item => 
-                            item.orderedRevenue >= 1000 && 
-                            item.conversionRate < avgConversion && 
-                            item.pageViews > medianPageViews
+                            item.orderedRevenue >= 500 && 
+                            item.conversionRate < avgConversion
                         )
                         .sort((a, b) => b.orderedRevenue - a.orderedRevenue)
-                        .slice(0, 10);
-                    
-                    // Combine and deduplicate
-                    const existingASINs = new Set(recoveryOpportunities.map(item => item.asin));
-                    traditionalOpportunities.forEach(item => {
-                        if (!existingASINs.has(item.asin) && recoveryOpportunities.length < 20) {
-                            recoveryOpportunities.push({
-                                ...item,
-                                priorityScore: 0,
-                                agedInventoryScore: item.aged90Percent,
-                                revenueScore: (item.orderedRevenue / totalRevenue) * 100
-                            });
-                        }
-                    });
+                        .slice(0, 10)
+                        .map(item => ({
+                            ...item,
+                            matrixScore: (item.orderedRevenue / totalRevenue) * 100,
+                            revenueImpact: (item.orderedRevenue / totalRevenue) * 100,
+                            stockRisk: 'UNKNOWN'
+                        }));
                 }
 
                 const list = document.getElementById('revenueRecoveryList');
@@ -1742,20 +1747,35 @@
                     const explanation = document.createElement('li');
                     explanation.style.fontStyle = 'italic';
                     explanation.style.color = '#666';
-                    explanation.textContent = 'Priority: High aged inventory (15%+) + below-average conversion + revenue scale';
+                    explanation.textContent = 'Matrix scoring: High-revenue products with conversion gaps and/or aged inventory';
                     list.appendChild(explanation);
                     
                     recoveryOpportunities.forEach(item => {
                         const li = document.createElement('li');
+                        
+                        const stockInfo = item.stockDays !== null ? 
+                            `${item.stockDays.toFixed(0)} days stock` : 
+                            'Stock data unavailable';
+                        
+                        const riskColor = {
+                            'CRITICAL': '#FF6B6B',
+                            'HIGH': '#FFA500', 
+                            'MEDIUM': '#FFD700',
+                            'LOW': '#90EE90',
+                            'UNKNOWN': '#BFC3C9'
+                        }[item.stockRisk];
+                        
                         li.innerHTML = `<strong>${item.title}</strong><br>
-                            £${item.orderedRevenue.toLocaleString()} revenue | ${item.conversionRate.toFixed(2)}% CVR | 
-                            <span style="color: #e74c3c; font-weight: bold;">${item.aged90Percent.toFixed(1)}% aged inventory</span>`;
+                            £${item.orderedRevenue.toLocaleString()} (${item.revenueImpact.toFixed(1)}% of portfolio) | 
+                            ${item.conversionRate.toFixed(2)}% CVR |
+                            <span style="color: #e74c3c; font-weight: bold;">${item.aged90Percent.toFixed(1)}% aged</span> |
+                            <span style="color: ${riskColor}; font-weight: bold;">${stockInfo}</span>`;
                         list.appendChild(li);
                     });
                     
                     if (recoveryOpportunities.length === 0) {
                         const li = document.createElement('li');
-                        li.textContent = 'No clear revenue recovery opportunities identified';
+                        li.textContent = 'No high-impact revenue recovery opportunities identified';
                         list.appendChild(li);
                     }
                 }
