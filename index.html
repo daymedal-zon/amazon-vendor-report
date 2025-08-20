@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self';">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self';">
     <title>Zon Amazon Analytics</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" integrity="sha512-r22gChDnGvBylk90+2e/ycr3RVrDi8DIOkIGNhJlKfuyQM4tIRAI062MaV8sfjQKYVGjOBaZBOA87z+IhZE9DA==" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js" integrity="sha512-SGWgwwRA8xZgEoKiex3UubkSkV1zSE1BS6O4pXcaxcNtUlQsOmOmhVnDwIvqGRfEmuz83tIGL13cXMZn6upPyg==" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js" integrity="sha512-ElRFoEQdI5Ht6kZvyzXhYG9NqjtkmlkfYk0wr6wHxU9JEHakS7UJZNeml5ALk+8IKlU6jDgMabC3vkumRokgJA==" crossorigin="anonymous"></script>
@@ -17,10 +18,11 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #228B22 0%, #006400 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #1A1A1A 0%, #2D2D2D 50%, #1A1A1A 100%);
             min-height: 100vh;
-            color: #333;
+            color: #BFC3C9;
+            font-weight: 400;
         }
 
         .container {
@@ -33,47 +35,80 @@
             text-align: center;
             margin-bottom: 30px;
             color: white;
-            padding: 20px 0;
-            background: linear-gradient(135deg, #2E8B57 0%, #228B22 100%);
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            padding: 40px 0;
+            background: linear-gradient(135deg, #007F5F 0%, #005D45 100%);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 127, 95, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent 45%, rgba(0, 255, 127, 0.03) 50%, transparent 55%);
+            z-index: 1;
         }
 
         .header h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-            font-weight: 700;
+            font-family: 'Orbitron', monospace;
+            font-size: 3.2rem;
+            margin-bottom: 15px;
+            font-weight: 900;
+            letter-spacing: 3px;
+            position: relative;
+            z-index: 2;
+            color: #00FF7F;
+            text-shadow: 
+                0 0 20px rgba(0, 255, 127, 0.8),
+                0 0 40px rgba(0, 255, 127, 0.4),
+                2px 2px 4px rgba(0, 0, 0, 0.3);
         }
 
         .header p {
-            font-size: 1.1rem;
-            opacity: 0.9;
+            font-family: 'Inter', sans-serif;
+            font-size: 1.2rem;
             margin: 0;
+            position: relative;
+            z-index: 2;
+            font-weight: 300;
+            letter-spacing: 0.5px;
+            color: #E8E8E8;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4);
+            opacity: 0.95;
         }
 
         .upload-section {
-            background: white;
-            border-radius: 15px;
+            background: linear-gradient(135deg, #2D2D2D 0%, #1A1A1A 100%);
+            border: 1px solid #007F5F;
+            border-radius: 20px;
             padding: 30px;
             margin-bottom: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            box-shadow: 0 15px 35px rgba(0, 127, 95, 0.2);
         }
 
         .upload-section h2 {
             margin-bottom: 20px;
-            color: #444;
+            color: #FFFFFF;
             text-align: center;
+            font-family: 'Orbitron', monospace;
+            font-weight: 700;
+            font-size: 1.5rem;
         }
 
         .note {
-            background: #e8f4f8;
-            border-left: 4px solid #228B22;
+            background: linear-gradient(135deg, #007F5F 0%, #005D45 100%);
+            border-left: 4px solid #00FF7F;
             padding: 15px;
             margin: 20px 0;
-            border-radius: 0 8px 8px 0;
+            border-radius: 0 12px 12px 0;
             font-size: 0.9rem;
-            color: #555;
+            color: #FFFFFF;
+            font-weight: 400;
         }
 
         .file-upload-grid {
@@ -84,32 +119,35 @@
         }
 
         .file-upload {
-            border: 2px dashed #ddd;
-            border-radius: 10px;
-            padding: 20px;
+            border: 2px dashed #007F5F;
+            border-radius: 15px;
+            padding: 25px;
             text-align: center;
             transition: all 0.3s ease;
             cursor: pointer;
+            background: linear-gradient(135deg, #1A1A1A 0%, #2D2D2D 100%);
         }
 
         .file-upload:hover {
-            border-color: #228B22;
-            background: #f8f9ff;
+            border-color: #00FF7F;
+            background: linear-gradient(135deg, #2D2D2D 0%, #1A1A1A 100%);
+            box-shadow: 0 10px 25px rgba(0, 255, 127, 0.2);
         }
 
         .file-upload.active {
-            border-color: #228B22;
-            background: #f0f4ff;
+            border-color: #00FF7F;
+            background: linear-gradient(135deg, #007F5F 0%, #005D45 100%);
+            box-shadow: 0 15px 30px rgba(0, 255, 127, 0.3);
         }
 
         .file-upload.error {
-            border-color: #e74c3c;
-            background: #ffeaea;
+            border-color: #FF6B6B;
+            background: linear-gradient(135deg, #2D1A1A 0%, #1A1A1A 100%);
         }
 
         .file-upload.success {
-            border-color: #27AE60;
-            background: #eafaf1;
+            border-color: #00FF7F;
+            background: linear-gradient(135deg, #1A2D1A 0%, #0D1A0D 100%);
         }
 
         .file-upload input {
@@ -119,8 +157,9 @@
         .file-upload label {
             cursor: pointer;
             font-weight: 600;
-            color: #666;
+            color: #BFC3C9;
             display: block;
+            font-family: 'Inter', sans-serif;
         }
 
         .file-status {
@@ -130,15 +169,15 @@
         }
 
         .file-status.success {
-            color: #27AE60;
+            color: #00FF7F;
         }
 
         .file-status.error {
-            color: #e74c3c;
+            color: #FF6B6B;
         }
 
         .process-btn {
-            background: linear-gradient(135deg, #228B22 0%, #006400 100%);
+            background: linear-gradient(135deg, #007F5F 0%, #005D45 100%);
             color: white;
             border: none;
             padding: 15px 30px;
@@ -149,11 +188,15 @@
             transition: all 0.3s ease;
             display: block;
             margin: 20px auto;
+            font-family: 'Orbitron', monospace;
+            letter-spacing: 1px;
+            box-shadow: 0 10px 25px rgba(0, 127, 95, 0.3);
         }
 
         .process-btn:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(34, 139, 34, 0.4);
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(0, 255, 127, 0.4);
+            background: linear-gradient(135deg, #00FF7F 0%, #007F5F 100%);
         }
 
         .process-btn:disabled {
@@ -163,21 +206,21 @@
         }
 
         .error-message {
-            background: #ffeaea;
-            border: 1px solid #e74c3c;
-            color: #c0392b;
+            background: linear-gradient(135deg, #2D1A1A 0%, #1A1A1A 100%);
+            border: 1px solid #FF6B6B;
+            color: #FF9999;
             padding: 15px;
-            border-radius: 8px;
+            border-radius: 12px;
             margin: 20px 0;
             display: none;
         }
 
         .success-message {
-            background: #eafaf1;
-            border: 1px solid #27ae60;
-            color: #1e8449;
+            background: linear-gradient(135deg, #1A2D1A 0%, #0D1A0D 100%);
+            border: 1px solid #00FF7F;
+            color: #99FF99;
             padding: 15px;
-            border-radius: 8px;
+            border-radius: 12px;
             margin: 20px 0;
             display: none;
         }
@@ -185,10 +228,11 @@
         .loading {
             text-align: center;
             padding: 40px;
-            color: #666;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            color: #BFC3C9;
+            background: linear-gradient(135deg, #2D2D2D 0%, #1A1A1A 100%);
+            border: 1px solid #007F5F;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 127, 95, 0.2);
             display: none;
         }
 
@@ -197,9 +241,9 @@
             width: 20px;
             height: 20px;
             margin-left: 10px;
-            border: 2px solid #666;
+            border: 2px solid #007F5F;
             border-radius: 50%;
-            border-top-color: transparent;
+            border-top-color: #00FF7F;
             animation: spin 1s linear infinite;
         }
 
@@ -210,7 +254,7 @@
         .dashboard {
             display: none;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
+            gap: 25px;
             margin-top: 30px;
         }
 
@@ -219,57 +263,85 @@
         }
 
         .metric-card {
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            background: linear-gradient(135deg, #2D2D2D 0%, #1A1A1A 100%);
+            border: 1px solid #007F5F;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0, 127, 95, 0.2);
             transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #007F5F 0%, #00FF7F 50%, #007F5F 100%);
+            z-index: 1;
         }
 
         .metric-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px rgba(0, 255, 127, 0.3);
+            border-color: #00FF7F;
         }
 
         .metric-card h3 {
-            color: #444;
-            margin-bottom: 15px;
-            font-size: 1.1rem;
+            color: #BFC3C9;
+            margin-bottom: 20px;
+            font-size: 1rem;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 2px;
+            font-family: 'Orbitron', monospace;
+            font-weight: 700;
         }
 
         .metric-value {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: #228B22;
-            margin-bottom: 10px;
+            font-size: 2.8rem;
+            font-weight: 900;
+            color: #00FF7F;
+            margin-bottom: 15px;
+            font-family: 'Orbitron', monospace;
+            text-shadow: 0 0 20px rgba(0, 255, 127, 0.5);
         }
 
         .metric-change {
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             font-weight: 600;
+            font-family: 'Inter', sans-serif;
         }
 
         .metric-change.positive {
-            color: #27AE60;
+            color: #00FF7F;
         }
 
         .metric-change.negative {
-            color: #E74C3C;
+            color: #FF6B6B;
         }
 
         .metric-change.neutral {
-            color: #7F8C8D;
+            color: #BFC3C9;
         }
 
         .chart-container {
             grid-column: span 2;
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            background: linear-gradient(135deg, #2D2D2D 0%, #1A1A1A 100%);
+            border: 1px solid #007F5F;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0, 127, 95, 0.2);
             height: 400px;
+        }
+
+        .chart-container h3 {
+            color: #BFC3C9;
+            margin-bottom: 20px;
+            font-family: 'Orbitron', monospace;
+            font-weight: 700;
         }
 
         .chart-container canvas {
@@ -278,39 +350,58 @@
 
         .data-table {
             grid-column: span 3;
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            background: linear-gradient(135deg, #2D2D2D 0%, #1A1A1A 100%);
+            border: 1px solid #007F5F;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0, 127, 95, 0.2);
             overflow-x: auto;
         }
 
         .summary-section {
             grid-column: span 3;
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            background: linear-gradient(135deg, #2D2D2D 0%, #1A1A1A 100%);
+            border: 1px solid #007F5F;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0, 127, 95, 0.2);
+        }
+
+        .summary-section h3 {
+            color: #BFC3C9;
+            margin-bottom: 20px;
+            font-family: 'Orbitron', monospace;
+            font-weight: 700;
         }
 
         .summary-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            margin-top: 15px;
+            gap: 25px;
+            margin-top: 20px;
         }
 
         .summary-card {
-            background: #f8f9fa;
-            border-radius: 10px;
-            padding: 20px;
-            border-left: 4px solid #228B22;
+            background: linear-gradient(135deg, #1A1A1A 0%, #2D2D2D 100%);
+            border: 1px solid #007F5F;
+            border-radius: 15px;
+            padding: 25px;
+            border-left: 4px solid #00FF7F;
         }
 
         .summary-card h4 {
-            color: #444;
-            margin-bottom: 10px;
+            color: #00FF7F;
+            margin-bottom: 15px;
             font-size: 1.1rem;
+            font-family: 'Orbitron', monospace;
+            font-weight: 700;
+        }
+
+        .summary-card p {
+            color: #BFC3C9;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+            line-height: 1.5;
         }
 
         .summary-list {
@@ -319,13 +410,28 @@
         }
 
         .summary-list li {
-            padding: 8px 0;
-            border-bottom: 1px solid #eee;
+            padding: 12px 0;
+            border-bottom: 1px solid #007F5F;
             font-size: 0.9rem;
+            color: #BFC3C9;
+            line-height: 1.4;
         }
 
         .summary-list li:last-child {
             border-bottom: none;
+        }
+
+        .data-table h3 {
+            color: #BFC3C9;
+            margin-bottom: 20px;
+            font-family: 'Orbitron', monospace;
+            font-weight: 700;
+        }
+
+        .data-table p {
+            color: #BFC3C9;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
         }
 
         table {
@@ -336,25 +442,101 @@
 
         th, td {
             text-align: left;
-            padding: 12px;
-            border-bottom: 1px solid #eee;
+            padding: 15px 12px;
+            border-bottom: 1px solid #007F5F;
+            color: #BFC3C9;
         }
 
         th {
-            background: #f8f9fa;
-            font-weight: 600;
-            color: #444;
+            background: linear-gradient(135deg, #007F5F 0%, #005D45 100%);
+            font-weight: 700;
+            color: #FFFFFF;
             position: sticky;
             top: 0;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         tr:hover {
-            background: #f8f9ff;
+            background: linear-gradient(135deg, rgba(0, 127, 95, 0.1) 0%, rgba(0, 255, 127, 0.05) 100%);
         }
 
         .export-section {
             grid-column: span 1;
             text-align: center;
+            padding: 25px;
+            background: linear-gradient(135deg, #2D2D2D 0%, #1A1A1A 100%);
+            border: 1px solid #007F5F;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 127, 95, 0.2);
+            display: none;
+        }
+
+        .export-section.show {
+            display: block;
+        }
+
+        .export-section h3 {
+            color: #BFC3C9;
+            margin-bottom: 20px;
+            font-family: 'Orbitron', monospace;
+            font-weight: 700;
+        }
+
+        .export-btn {
+            background: linear-gradient(135deg, #007F5F 0%, #005D45 100%);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 12px;
+            margin: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-family: 'Inter', sans-serif;
+            box-shadow: 0 8px 20px rgba(0, 127, 95, 0.3);
+        }
+
+        .export-btn:hover {
+            background: linear-gradient(135deg, #00FF7F 0%, #007F5F 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 25px rgba(0, 255, 127, 0.4);
+        }
+
+        .version-info {
+            position: fixed;
+            bottom: 15px;
+            right: 15px;
+            background: linear-gradient(135deg, #1A1A1A 0%, #007F5F 100%);
+            color: #00FF7F;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            z-index: 1000;
+            font-family: 'Orbitron', monospace;
+            font-weight: 700;
+            border: 1px solid #007F5F;
+            box-shadow: 0 5px 15px rgba(0, 127, 95, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .chart-container,
+            .data-table,
+            .summary-section {
+                grid-column: span 1;
+            }
+            
+            .header h1 {
+                font-size: 2.4rem;
+                letter-spacing: 2px;
+            }
+            
+            .metric-value {
+                font-size: 2.2rem;
+            }
+        }
             padding: 20px;
             background: white;
             border-radius: 15px;
@@ -536,7 +718,7 @@
                     </div>
                     <div class="summary-card">
                         <h4>💰 Revenue Recovery Opportunities</h4>
-                        <p>High-revenue products with optimization potential</p>
+                        <p>High aged inventory (15%+) with below-average conversion - clearing these accelerates account growth</p>
                         <ul class="summary-list" id="revenueRecoveryList"></ul>
                     </div>
                     <div class="summary-card">
@@ -1311,16 +1493,18 @@
                     .sort((a, b) => b.orderedRevenue - a.orderedRevenue)
                     .slice(0, 10);
 
-                this.charts.revenue = new Chart(ctx, {
+                                        this.charts.revenue = new Chart(ctx, {
                     type: 'bar',
                     data: {
                         labels: sortedData.map(item => item.title.substring(0, 30) + '...'),
                         datasets: [{
                             label: 'Revenue (£)',
                             data: sortedData.map(item => item.orderedRevenue),
-                            backgroundColor: '#228B22',
-                            borderColor: '#006400',
-                            borderWidth: 1
+                            backgroundColor: 'rgba(0, 127, 95, 0.8)',
+                            borderColor: '#00FF7F',
+                            borderWidth: 2,
+                            borderRadius: 8,
+                            borderSkipped: false,
                         }]
                     },
                     options: {
@@ -1337,12 +1521,20 @@
                                 ticks: {
                                     callback: function(value) {
                                         return '£' + value.toLocaleString();
-                                    }
+                                    },
+                                    color: '#BFC3C9'
+                                },
+                                grid: {
+                                    color: 'rgba(0, 127, 95, 0.2)'
                                 }
                             },
                             x: {
                                 ticks: {
-                                    maxRotation: 45
+                                    maxRotation: 45,
+                                    color: '#BFC3C9'
+                                },
+                                grid: {
+                                    color: 'rgba(0, 127, 95, 0.2)'
                                 }
                             }
                         }
@@ -1365,9 +1557,11 @@
                         datasets: [{
                             data: sortedData.map(item => item.orderedUnits),
                             backgroundColor: [
-                                '#228B22', '#32CD32', '#90EE90', '#98FB98', '#00FF7F',
-                                '#00FA9A', '#7FFF00', '#ADFF2F', '#9AFF9A', '#00FF00'
-                            ]
+                                '#007F5F', '#00FF7F', '#005D45', '#40E0D0', '#20B2AA',
+                                '#48D1CC', '#00CED1', '#5F9EA0', '#4682B4', '#6495ED'
+                            ],
+                            borderColor: '#1A1A1A',
+                            borderWidth: 2
                         }]
                     },
                     options: {
@@ -1375,7 +1569,13 @@
                         maintainAspectRatio: false,
                         plugins: {
                             legend: {
-                                position: 'right'
+                                position: 'right',
+                                labels: {
+                                    color: '#BFC3C9',
+                                    font: {
+                                        family: 'Inter'
+                                    }
+                                }
                             }
                         }
                     }
@@ -1472,38 +1672,86 @@
 
             populateRevenueRecovery() {
                 const avgConversion = this.processedData.reduce((sum, item) => sum + item.conversionRate, 0) / this.processedData.length;
-                const pageViews = this.processedData.map(item => item.pageViews).filter(pv => pv > 0);
-                const medianPageViews = pageViews.sort((a, b) => a - b)[Math.floor(pageViews.length / 2)] || 0;
+                const totalRevenue = this.processedData.reduce((sum, item) => sum + item.orderedRevenue, 0);
                 
+                // Enhanced criteria for revenue recovery with aged inventory focus
                 let recoveryOpportunities = this.processedData
                     .filter(item => 
-                        item.orderedRevenue >= 1000 && 
-                        item.conversionRate < avgConversion && 
-                        item.pageViews > medianPageViews
+                        item.conversionRate < avgConversion && // Below average conversion
+                        item.aged90Percent > 15 && // High aged inventory (>15%)
+                        item.orderedRevenue > 0 && // Has revenue
+                        item.pageViews > 0 // Has traffic to optimize
                     )
-                    .sort((a, b) => b.orderedRevenue - a.orderedRevenue)
+                    .map(item => {
+                        // Calculate priority score: Higher aged inventory % + higher revenue = higher priority
+                        const revenueScore = (item.orderedRevenue / totalRevenue) * 100; // % of total revenue
+                        const agedInventoryScore = item.aged90Percent; // % of aged inventory
+                        const conversionGap = avgConversion - item.conversionRate; // How far below average
+                        
+                        // Weighted scoring: aged inventory is high priority, revenue provides scale
+                        const priorityScore = (agedInventoryScore * 2) + revenueScore + (conversionGap * 0.5);
+                        
+                        return {
+                            ...item,
+                            revenueScore,
+                            agedInventoryScore,
+                            conversionGap,
+                            priorityScore
+                        };
+                    })
+                    .sort((a, b) => b.priorityScore - a.priorityScore)
                     .slice(0, 20);
 
-                // Fallback: if no opportunities found, show top revenue products with below-average conversion
-                if (recoveryOpportunities.length === 0) {
-                    recoveryOpportunities = this.processedData
-                        .filter(item => item.orderedRevenue >= 500 && item.conversionRate < avgConversion)
+                // Fallback: if no high aged inventory opportunities, use traditional criteria
+                if (recoveryOpportunities.length < 3) {
+                    const pageViews = this.processedData.map(item => item.pageViews).filter(pv => pv > 0);
+                    const medianPageViews = pageViews.sort((a, b) => a - b)[Math.floor(pageViews.length / 2)] || 0;
+                    
+                    const traditionalOpportunities = this.processedData
+                        .filter(item => 
+                            item.orderedRevenue >= 1000 && 
+                            item.conversionRate < avgConversion && 
+                            item.pageViews > medianPageViews
+                        )
                         .sort((a, b) => b.orderedRevenue - a.orderedRevenue)
-                        .slice(0, 5);
+                        .slice(0, 10);
+                    
+                    // Combine and deduplicate
+                    const existingASINs = new Set(recoveryOpportunities.map(item => item.asin));
+                    traditionalOpportunities.forEach(item => {
+                        if (!existingASINs.has(item.asin) && recoveryOpportunities.length < 20) {
+                            recoveryOpportunities.push({
+                                ...item,
+                                priorityScore: 0,
+                                agedInventoryScore: item.aged90Percent,
+                                revenueScore: (item.orderedRevenue / totalRevenue) * 100
+                            });
+                        }
+                    });
                 }
 
                 const list = document.getElementById('revenueRecoveryList');
                 if (list) {
                     list.innerHTML = '';
+                    
+                    // Add explanation header
+                    const explanation = document.createElement('li');
+                    explanation.style.fontStyle = 'italic';
+                    explanation.style.color = '#666';
+                    explanation.textContent = 'Priority: High aged inventory (15%+) + below-average conversion + revenue scale';
+                    list.appendChild(explanation);
+                    
                     recoveryOpportunities.forEach(item => {
                         const li = document.createElement('li');
-                        li.textContent = `${item.title} - £${item.orderedRevenue.toLocaleString()} (${item.conversionRate.toFixed(2)}%)`;
+                        li.innerHTML = `<strong>${item.title}</strong><br>
+                            £${item.orderedRevenue.toLocaleString()} revenue | ${item.conversionRate.toFixed(2)}% CVR | 
+                            <span style="color: #e74c3c; font-weight: bold;">${item.aged90Percent.toFixed(1)}% aged inventory</span>`;
                         list.appendChild(li);
                     });
                     
                     if (recoveryOpportunities.length === 0) {
                         const li = document.createElement('li');
-                        li.textContent = 'No clear recovery opportunities identified';
+                        li.textContent = 'No clear revenue recovery opportunities identified';
                         list.appendChild(li);
                     }
                 }
