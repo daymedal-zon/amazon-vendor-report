@@ -691,15 +691,17 @@
             </div>
 
             <div class="metric-card">
-                <h3>90+ Days Inventory %</h3>
-                <div class="metric-value" id="aged90Percent">0%</div>
-                <div class="metric-change" id="aged90PercentChange"></div>
+                <h3>Low Stock Titles</h3>
+                <div class="metric-value" id="lowStockCount">0</div>
+                <div class="metric-change" id="lowStockChange">≤14 days remaining</div>
             </div>
 
             <div class="export-section show" id="exportSection">
                 <h3>Export Your Report</h3>
-                <button class="export-btn" id="exportExcel">📊 Export to Excel</button>
-                <button class="export-btn" id="exportCSV">📋 Export to CSV</button>
+                <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                    <button class="export-btn" id="exportExcel">📊 Export to Excel</button>
+                    <button class="export-btn" id="exportCSV">📋 Export to CSV</button>
+                </div>
             </div>
 
             <div class="chart-container">
