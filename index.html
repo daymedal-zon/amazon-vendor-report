@@ -1,4 +1,23 @@
-<!DOCTYPE html>
+const orderedUnits = this.parseNum(salesRow['Ordered units'] || salesRow['Ordered Units']) || 0;
+                            const orderedRevenue = this.parseNum(salesRow['Ordered revenue'] || salesRow['Ordered Revenue']) || 0;
+                            
+                            // Skip rows with no units and no revenue
+                            if (orderedUnits === 0 && orderedRevenue === 0) return;
+                            
+                            const dispatchedRevenue = this.parseNum(salesRow['Dispatched revenue'] || salesRow['Shipped Revenue']) || 0;
+                            const dispatchedCOGS = this.parseNum(salesRow['Dispatched COGS'] || salesRow['Shipped COGS']) || 0;
+                            const pageViews = this.parseNum(trafficRow['Featured offer page views']) || 0;
+
+                            // CALCULATE LAST PERIOD ACTUALS FROM CURRENT + YoY%
+                            const orderedRevenueYoYRaw = this.parseYoY(
+                                salesRow['Ordered Revenue – Same Period Last Year (%)'] || 
+                                salesRow['Ordered Revenue - Same Period Last Year (%)']
+                            );
+                            const orderedUnitsYoYRaw = this.parseYoY(
+                                salesRow['Ordered Units – Same Period Last Year (%)'] || 
+                                salesRow['Ordered Units - Same Period Last Year (%)']
+                            );
+                            const pageViewsYoYRaw = this.parseYoY(trafficRow['Featured offer page views – Same Period Last Year (%)']);<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -571,7 +590,7 @@
         <div class="upload-section">
             <h2>Upload Your Excel Reports</h2>
             <div class="note">
-                <strong>Important:</strong> Remove Row A (header row) from your Excel files before uploading. Upload your Amazon Vendor Central Excel files below. Supports files up to 50MB.
+                <strong>Important:</strong> Remove Row A (header row) from your Excel files before uploading. Supports both US and UK Amazon Vendor Central formats. Upload your Amazon Vendor Central Excel files below. Supports files up to 50MB.
             </div>
             
             <div class="error-message" id="errorMessage"></div>
@@ -732,7 +751,7 @@
         </div>
 
         <div class="version-info">
-            v1.03 | Zon Analytics
+            v1.05 | Zon Analytics
         </div>
     </div>
 
@@ -903,7 +922,65 @@
             calculatePeriodFromFilename(filename) {
                 try {
                     // Extract dates from filename pattern: *_01072025_31072025.* or *_01-07-2025_12-08-2025.*
-                    const dateMatch = filename.match(/(\d{2}[\-]?\d{2}[\-]?\d{4})_(\d{2}[\-]?\d{2}[\-]?\d{4})/);
+                    // Also handle US format: *_112025_8192025.* (MMDDYYYY)
+                    let dateMatch = filename.match(/(\d{2}[\-]?\d{2}[\-]?\d{4})_(\d{2}[\-]?\d{2}[\-]?\d{4})/);
+                    
+                    if (!dateMatch) {
+                        // Try US format: MMDDYYYY_MMDDYYYY (more flexible pattern)
+                        dateMatch = filename.match(/(\d{6,8})_(\d{6,8})/);
+                        if (dateMatch) {
+                            console.log('Detected US date format (MMDDYYYY)');
+                            const startDateStr = dateMatch[1];
+                            const endDateStr = dateMatch[2];
+                            
+                            // Parse US format: MMDDYYYY or MMDDYY
+                            let startMonth, startDay, startYear, endMonth, endDay, endYear;
+                            
+                            if (startDateStr.length === 6) {
+                                // MMDDYY format: 112025 = 11/20/25
+                                startMonth = parseInt(startDateStr.substring(0, 2)) - 1;
+                                startDay = parseInt(startDateStr.substring(2, 4));
+                                startYear = 2000 + parseInt(startDateStr.substring(4, 6));
+                            } else if (startDateStr.length === 8) {
+                                // MMDDYYYY format: 11202025 = 11/20/2025
+                                startMonth = parseInt(startDateStr.substring(0, 2)) - 1;
+                                startDay = parseInt(startDateStr.substring(2, 4));
+                                startYear = parseInt(startDateStr.substring(4, 8));
+                            } else {
+                                // Handle edge case: single digit month 12025 = 1/20/25
+                                startMonth = parseInt(startDateStr.substring(0, 1)) - 1;
+                                startDay = parseInt(startDateStr.substring(1, 3));
+                                startYear = 2000 + parseInt(startDateStr.substring(3, 5));
+                            }
+                            
+                            if (endDateStr.length === 6) {
+                                // MMDDYY format
+                                endMonth = parseInt(endDateStr.substring(0, 2)) - 1;
+                                endDay = parseInt(endDateStr.substring(2, 4));
+                                endYear = 2000 + parseInt(endDateStr.substring(4, 6));
+                            } else if (endDateStr.length === 8) {
+                                // MMDDYYYY format
+                                endMonth = parseInt(endDateStr.substring(0, 2)) - 1;
+                                endDay = parseInt(endDateStr.substring(2, 4));
+                                endYear = parseInt(endDateStr.substring(4, 8));
+                            } else {
+                                // Handle edge case: single digit month
+                                endMonth = parseInt(endDateStr.substring(0, 1)) - 1;
+                                endDay = parseInt(endDateStr.substring(1, 3));
+                                endYear = 2000 + parseInt(endDateStr.substring(3, 5));
+                            }
+                            
+                            const startDate = new Date(startYear, startMonth, startDay);
+                            const endDate = new Date(endYear, endMonth, endDay);
+                            
+                            const diffTime = Math.abs(endDate - startDate);
+                            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+                            
+                            this.daysInPeriod = diffDays;
+                            console.log(`Calculated period: ${diffDays} days (${startMonth+1}/${startDay}/${startYear} to ${endMonth+1}/${endDay}/${endYear})`);
+                            return;
+                        }
+                    }
                     
                     if (dateMatch) {
                         const startDateStr = dateMatch[1].replace(/[\-]/g, '');
@@ -1069,12 +1146,12 @@
                 
                 // Use simple decimal-to-percentage conversion for consistency
                 if (Math.abs(num) <= 1) {
-                    return num * 100; // -0.1575 → -15.75%
+                    return Math.round(num * 10000) / 100; // -0.1575 → -15.75%
                 } else if (Math.abs(num) > 1 && Math.abs(num) <= 100) {
-                    return num; // 16.43 → 16.43%
+                    return Math.round(num * 100) / 100; // 16.4304 → 16.43%
                 } else {
                     // Very large values might be basis points
-                    return num / 100; // 1643 → 16.43%
+                    return Math.round(num) / 100; // 1643 → 16.43%
                 }
             }
 
@@ -1200,10 +1277,21 @@
                                 console.warn(`Invalid aged inventory % for ASIN ${asin}: ${aged90Percent.toFixed(1)}%`);
                             }
                             
-                            // Get other YoY values for completeness
-                            const dispatchedUnitsYoY = this.parseYoY(salesRow['Dispatched Units – Same Period Last Year (%)']);
-                            const vendorLeadTimeYoY = this.parseYoY(inventoryRow['Overall Vendor Lead Time (days) – Same Period Last Year (%)']);
-                            const aged90YoY = this.parseYoY(inventoryRow['Aged 90+ Days Sellable Units – Same Period Last Year (%)']);
+                            // Get other YoY values for completeness - support both US and UK formats
+                            const dispatchedUnitsYoY = this.parseYoY(
+                                salesRow['Dispatched Units – Same Period Last Year (%)'] || 
+                                salesRow['Dispatched Units - Same Period Last Year (%)'] ||
+                                salesRow['Shipped Units – Same Period Last Year (%)'] || 
+                                salesRow['Shipped Units - Same Period Last Year (%)']
+                            );
+                            const vendorLeadTimeYoY = this.parseYoY(
+                                inventoryRow['Overall Vendor Lead Time (days) – Same Period Last Year (%)'] ||
+                                inventoryRow['Overall Vendor Lead Time (days) - Same Period Last Year (%)']
+                            );
+                            const aged90YoY = this.parseYoY(
+                                inventoryRow['Aged 90+ Days Sellable Units – Same Period Last Year (%)'] ||
+                                inventoryRow['Aged 90+ Days Sellable Units - Same Period Last Year (%)']
+                            );
 
                             // Log calculation verification for first 5 products
                             if (index < 5 && lastPeriodRevenue !== null) {
@@ -1222,7 +1310,7 @@
 
                             merged.push({
                                 asin: asin,
-                                title: salesRow['Product title'] || '',
+                                title: salesRow['Product title'] || salesRow['Product Title'] || '',
                                 brand: salesRow['Brand'] || '',
                                 orderedUnits: orderedUnits,
                                 orderedRevenue: orderedRevenue,
