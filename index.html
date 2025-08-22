@@ -113,8 +113,7 @@ font-weight: 400;
 
 .file-upload-grid {
 display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
 gap: 20px;
 margin-bottom: 20px;
 }
@@ -330,51 +329,6 @@ color: #FF6B6B;
 color: #BFC3C9;
 }
 
-        .export-section {
-            grid-column: span 2;
-            text-align: center;
-            padding: 25px;
-            background: linear-gradient(135deg, #2D2D2D 0%, #1A1A1A 100%);
-            border: 1px solid #007F5F;
-            border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0, 127, 95, 0.2);
-            display: none;
-        }
-
-        .export-section.show {
-            display: block;
-        }
-
-        .export-section h3 {
-            color: #BFC3C9;
-            margin-bottom: 20px;
-            font-family: 'Orbitron', monospace;
-            font-weight: 700;
-        }
-
-        .export-btn {
-            background: linear-gradient(135deg, #007F5F 0%, #005D45 100%);
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 12px;
-            margin: 5px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            font-family: 'Inter', sans-serif;
-            box-shadow: 0 8px 20px rgba(0, 127, 95, 0.3);
-            min-width: 160px;
-            flex: 1;
-            max-width: 200px;
-        }
-
-        .export-btn:hover {
-            background: linear-gradient(135deg, #00FF7F 0%, #007F5F 100%);
-            transform: translateY(-2px);
-            box-shadow: 0 12px 25px rgba(0, 255, 127, 0.4);
-        }
-
 .chart-container {
 grid-column: span 2;
 background: linear-gradient(135deg, #2D2D2D 0%, #1A1A1A 100%);
@@ -511,49 +465,49 @@ tr:hover {
 background: linear-gradient(135deg, rgba(0, 127, 95, 0.1) 0%, rgba(0, 255, 127, 0.05) 100%);
 }
 
-        .export-section {
-            grid-column: span 1;
-            text-align: center;
-            padding: 25px;
-            background: linear-gradient(135deg, #2D2D2D 0%, #1A1A1A 100%);
-            border: 1px solid #007F5F;
-            border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0, 127, 95, 0.2);
-            display: none;
-        }
+.export-section {
+grid-column: span 1;
+text-align: center;
+padding: 25px;
+background: linear-gradient(135deg, #2D2D2D 0%, #1A1A1A 100%);
+border: 1px solid #007F5F;
+border-radius: 20px;
+box-shadow: 0 15px 35px rgba(0, 127, 95, 0.2);
+display: none;
+}
 
-        .export-section.show {
-            display: block;
-        }
+.export-section.show {
+display: block;
+}
 
-        .export-section h3 {
-            color: #BFC3C9;
-            margin-bottom: 20px;
-            font-family: 'Orbitron', monospace;
-            font-weight: 700;
-        }
+.export-section h3 {
+color: #BFC3C9;
+margin-bottom: 20px;
+font-family: 'Orbitron', monospace;
+font-weight: 700;
+}
 
-        .export-btn {
-            background: linear-gradient(135deg, #007F5F 0%, #005D45 100%);
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 12px;
-            margin: 5px 15px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            font-family: 'Inter', sans-serif;
-            box-shadow: 0 8px 20px rgba(0, 127, 95, 0.3);
-            display: block;
-            width: 180px;
-        }
+.export-btn {
+background: linear-gradient(135deg, #007F5F 0%, #005D45 100%);
+color: white;
+border: none;
+padding: 12px 20px;
+border-radius: 12px;
+margin: 5px 15px;
+cursor: pointer;
+font-weight: 600;
+transition: all 0.3s ease;
+font-family: 'Inter', sans-serif;
+box-shadow: 0 8px 20px rgba(0, 127, 95, 0.3);
+display: block;
+width: 180px;
+}
 
-        .export-btn:hover {
-            background: linear-gradient(135deg, #00FF7F 0%, #007F5F 100%);
-            transform: translateY(-2px);
-            box-shadow: 0 12px 25px rgba(0, 255, 127, 0.4);
-        }
+.export-btn:hover {
+background: linear-gradient(135deg, #00FF7F 0%, #007F5F 100%);
+transform: translateY(-2px);
+box-shadow: 0 12px 25px rgba(0, 255, 127, 0.4);
+}
 
 .version-info {
 position: fixed;
@@ -586,71 +540,60 @@ letter-spacing: 2px;
 .metric-value {
 font-size: 2.2rem;
 }
-        }
-            padding: 20px;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            display: none;
-        }
+}
+padding: 20px;
+background: white;
+border-radius: 15px;
+box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+display: none;
+}
 
-        .export-section.show {
-            display: block;
-        }
+.export-section.show {
+display: block;
+}
 
-        .export-btn {
-            background: #27AE60;
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 20px;
-            margin: 0 10px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
+.export-btn {
+background: #27AE60;
+color: white;
+border: none;
+padding: 12px 25px;
+border-radius: 20px;
+margin: 0 10px;
+cursor: pointer;
+font-weight: 600;
+transition: all 0.3s ease;
+}
 
-        .export-btn:hover {
-            background: #219A52;
-            transform: translateY(-2px);
-        }
+.export-btn:hover {
+background: #219A52;
+transform: translateY(-2px);
+}
 
-        .version-info {
-            position: fixed;
-            bottom: 10px;
-            right: 10px;
-            background: rgba(0,0,0,0.7);
-            color: white;
-            padding: 5px 10px;
-            border-radius: 15px;
-            font-size: 0.8rem;
-            z-index: 1000;
-        }
+.version-info {
+position: fixed;
+bottom: 10px;
+right: 10px;
+background: rgba(0,0,0,0.7);
+color: white;
+padding: 5px 10px;
+border-radius: 15px;
+font-size: 0.8rem;
+z-index: 1000;
+}
 
-        @media (max-width: 768px) {
-            .chart-container,
-            .data-table,
-            .summary-section {
-            
-            .file-upload-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .export-section {
+@media (max-width: 768px) {
+.chart-container,
+.data-table,
+.summary-section {
 grid-column: span 1;
 }
 
-            .header h1 {
-                font-size: 2rem;
-            .export-section div {
-                flex-direction: column;
+.header h1 {
+font-size: 2rem;
 }
 
-            .metric-value {
-                font-size: 2rem;
-            .export-btn {
-                max-width: none;
-                width: 100%;
+.metric-value {
+font-size: 2rem;
 }
 }
 </style>
@@ -665,8 +608,7 @@ grid-column: span 1;
 <div class="upload-section">
 <h2>Upload Your Excel Reports</h2>
 <div class="note">
-                <strong>Note:</strong> Upload your Amazon Vendor Central Excel files below. Supports files up to 50MB.
-                <strong>Important:</strong> Remove Row A (header row) from your Excel files before uploading. Upload your Amazon Vendor Central Excel files below. Supports files up to 50MB.
+<strong>Note:</strong> Upload your Amazon Vendor Central Excel files below. Supports files up to 50MB.
 </div>
 
 <div class="error-message" id="errorMessage"></div>
@@ -748,26 +690,23 @@ Processing your data...<span class="loading-spinner"></span>
 <div class="metric-change" id="vendorLeadTimeChange"></div>
 </div>
 
-            <div class="metric-card">
+<div class="metric-card">
                 <h3>90+ Days Inventory %</h3>
                 <div class="metric-value" id="aged90Percent">0%</div>
                 <div class="metric-change" id="aged90PercentChange"></div>
-            </div>
-
-<div class="metric-card">
-<h3>Low Stock Titles</h3>
+                <h3>Low Stock Titles</h3>
                 <div class="metric-value" id="lowStockCount">0</div>
                 <div class="metric-change" id="lowStockChange">≤14 days remaining</div>
-                <div class="metric-value" id="lowStockTitles">0</div>
-                <div class="metric-change" id="lowStockTitlesChange">≤14 days stock</div>
 </div>
 
 <div class="export-section show" id="exportSection">
 <h3>Export Your Report</h3>
-<div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
-<button class="export-btn" id="exportExcel">📊 Export to Excel</button>
-<button class="export-btn" id="exportCSV">📋 Export to CSV</button>
-</div>
+                <button class="export-btn" id="exportExcel">📊 Export to Excel</button>
+                <button class="export-btn" id="exportCSV">📋 Export to CSV</button>
+                <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                    <button class="export-btn" id="exportExcel">📊 Export to Excel</button>
+                    <button class="export-btn" id="exportCSV">📋 Export to CSV</button>
+                </div>
 </div>
 
 <div class="chart-container">
@@ -817,7 +756,6 @@ Processing your data...<span class="loading-spinner"></span>
 <th>Daily Sales</th>
 <th>Lead Time (days)</th>
 <th>90+ Days Inventory %</th>
-                                <th>Days of Stock</th>
 <th>Net PPM %</th>
 </tr>
 </thead>
@@ -828,15 +766,14 @@ Processing your data...<span class="loading-spinner"></span>
 </div>
 </div>
 
-        <div class="export-section" id="exportSection">
-            <h3>Export Your Report</h3>
-            <button class="export-btn" id="exportExcel">📊 Export to Excel</button>
-            <button class="export-btn" id="exportCSV">📋 Export to CSV</button>
-        </div>
+<div class="export-section" id="exportSection">
+<h3>Export Your Report</h3>
+<button class="export-btn" id="exportExcel">📊 Export to Excel</button>
+<button class="export-btn" id="exportCSV">📋 Export to CSV</button>
+</div>
 
 <div class="version-info">
-            v1.02 | Zon Analytics
-            v1.03 | Zon Analytics
+v1.02 | Zon Analytics
 </div>
 </div>
 
@@ -1257,8 +1194,7 @@ if (pageViewsYoYRaw !== null && pageViews > 0) {
 lastPeriodPageViews = pageViews / (1 + (pageViewsYoYRaw / 100));
 calculatedPageViewsYoY = ((pageViews - lastPeriodPageViews) / lastPeriodPageViews) * 100;
 }
-                            const leadTime = this.parseNum(inventoryRow['Overall Vendor Lead Time (days)']) || 0;
-                            
+const leadTime = this.parseNum(inventoryRow['Overall Vendor Lead Time (days)']) || 0;
 
 // Check multiple possible column name variations for inventory data
 const vendorLeadTime = this.parseNum(
@@ -1371,16 +1307,6 @@ updateDashboard() {
 try {
 const totals = this.calculateTotals();
 
-                    // Calculate low stock titles
-                    const lowStockCount = this.processedData.filter(item => {
-                        const dailySalesUnits = item.orderedUnits / this.daysInPeriod;
-                        if (dailySalesUnits <= 0) return false;
-                        
-                        const stockDays = item.sellableUnits / dailySalesUnits;
-                        const riskDays = stockDays - item.leadTime;
-                        return riskDays <= 14; // Low stock if ≤14 days after lead time
-                    }).length;
-                    
 // Update metric cards
 this.updateElement('orderedUnits', totals.orderedUnits.toLocaleString());
 this.updateElement('orderedRevenue', '£' + Math.round(totals.orderedRevenue).toLocaleString());
@@ -1390,7 +1316,6 @@ this.updateElement('dailySales', '£' + Math.round(totals.dailySales).toLocaleSt
 this.updateElement('netPPM', totals.netPPM.toFixed(1) + '%');
 this.updateElement('vendorLeadTime', totals.leadTime.toFixed(0) + ' days');
 this.updateElement('aged90Percent', totals.aged90Percent.toFixed(1) + '%');
-                    this.updateElement('lowStockTitles', lowStockCount.toString());
 
 // Update YoY changes
 this.updateYoYChange('orderedUnitsChange', totals.orderedUnitsYoY);
@@ -1579,8 +1504,7 @@ const sortedData = [...this.processedData]
 .sort((a, b) => b.orderedRevenue - a.orderedRevenue)
 .slice(0, 10);
 
-                                        this.charts.revenue = new Chart(ctx, {
-                this.charts.revenue = new Chart(ctx, {
+this.charts.revenue = new Chart(ctx, {
 type: 'bar',
 data: {
 labels: sortedData.map(item => item.title.substring(0, 30) + '...'),
@@ -1681,29 +1605,6 @@ const sortedData = [...this.processedData]
 
 sortedData.forEach(item => {
 const row = tbody.insertRow();
-                    
-                    // Calculate days of stock and risk level
-                    const dailySalesUnits = item.orderedUnits / this.daysInPeriod;
-                    const stockDays = dailySalesUnits > 0 ? item.sellableUnits / dailySalesUnits : null;
-                    const riskDays = stockDays !== null ? stockDays - item.leadTime : null;
-                    
-                    let stockDisplay = 'N/A';
-                    let stockColor = '#BFC3C9';
-                    
-                    if (stockDays !== null) {
-                        stockDisplay = stockDays.toFixed(0) + ' days';
-                        
-                        if (riskDays <= 0) {
-                            stockColor = '#FF6B6B'; // CRITICAL - Red
-                        } else if (riskDays <= 7) {
-                            stockColor = '#FFA500'; // HIGH - Orange
-                        } else if (riskDays <= 14) {
-                            stockColor = '#FFD700'; // MEDIUM - Yellow
-                        } else {
-                            stockColor = '#90EE90'; // LOW - Green
-                        }
-                    }
-                    
 row.innerHTML = `
                        <td>${item.asin}</td>
                        <td>${item.title}</td>
@@ -1714,7 +1615,6 @@ row.innerHTML = `
                        <td>£${item.dailySales.toFixed(0)}</td>
                        <td>${item.leadTime.toFixed(0)}</td>
                        <td>${item.aged90Percent.toFixed(1)}%</td>
-                        <td style="color: ${stockColor}; font-weight: bold;">${stockDisplay}</td>
                        <td>${item.netPPM.toFixed(1)}%</td>
                    `;
 });
@@ -1906,49 +1806,21 @@ list.appendChild(li);
 
 exportExcel() {
 try {
-                    const ws = XLSX.utils.json_to_sheet(this.processedData.map(item => ({
-                        'ASIN': item.asin,
-                        'Product Title': item.title,
-                        'Brand': item.brand,
-                        'Ordered Units': item.orderedUnits,
-                        'Ordered Revenue': item.orderedRevenue,
-                        'Page Views': item.pageViews,
-                        'Conversion Rate %': item.conversionRate.toFixed(2),
-                        'Daily Sales': item.dailySales.toFixed(2),
-                        'Net PPM %': item.netPPM.toFixed(2),
-                        'Lead Time Days': item.leadTime.toFixed(0),
-                        '90+ Days Inventory %': item.aged90Percent.toFixed(1),
-                        'Ordered Revenue YoY %': item.orderedRevenueYoY ? item.orderedRevenueYoY.toFixed(1) : 'N/A',
-                        'Ordered Units YoY %': item.orderedUnitsYoY ? item.orderedUnitsYoY.toFixed(1) : 'N/A'
-                    })));
-                    const ws = XLSX.utils.json_to_sheet(this.processedData.map(item => {
-                        const dailySalesUnits = item.orderedUnits / this.daysInPeriod;
-                        const stockDays = dailySalesUnits > 0 ? item.sellableUnits / dailySalesUnits : null;
-                        const riskDays = stockDays !== null ? stockDays - item.leadTime : null;
-                        const stockRisk = riskDays !== null ? (
-                            riskDays <= 0 ? 'CRITICAL' :
-                            riskDays <= 7 ? 'HIGH' :
-                            riskDays <= 14 ? 'MEDIUM' : 'LOW'
-                        ) : 'UNKNOWN';
-                        
-                        return {
-                            'ASIN': item.asin,
-                            'Product Title': item.title,
-                            'Brand': item.brand,
-                            'Ordered Units': item.orderedUnits,
-                            'Ordered Revenue': item.orderedRevenue,
-                            'Page Views': item.pageViews,
-                            'Conversion Rate %': item.conversionRate.toFixed(2),
-                            'Daily Sales': item.dailySales.toFixed(2),
-                            'Net PPM %': item.netPPM.toFixed(2),
-                            'Lead Time Days': item.leadTime.toFixed(0),
-                            '90+ Days Inventory %': item.aged90Percent.toFixed(1),
-                            'Days of Stock': stockDays !== null ? stockDays.toFixed(0) : 'N/A',
-                            'Stock Risk Level': stockRisk,
-                            'Ordered Revenue YoY %': item.orderedRevenueYoY ? item.orderedRevenueYoY.toFixed(1) : 'N/A',
-                            'Ordered Units YoY %': item.orderedUnitsYoY ? item.orderedUnitsYoY.toFixed(1) : 'N/A'
-                        };
-                    }));
+const ws = XLSX.utils.json_to_sheet(this.processedData.map(item => ({
+'ASIN': item.asin,
+'Product Title': item.title,
+'Brand': item.brand,
+'Ordered Units': item.orderedUnits,
+'Ordered Revenue': item.orderedRevenue,
+'Page Views': item.pageViews,
+'Conversion Rate %': item.conversionRate.toFixed(2),
+'Daily Sales': item.dailySales.toFixed(2),
+'Net PPM %': item.netPPM.toFixed(2),
+'Lead Time Days': item.leadTime.toFixed(0),
+'90+ Days Inventory %': item.aged90Percent.toFixed(1),
+'Ordered Revenue YoY %': item.orderedRevenueYoY ? item.orderedRevenueYoY.toFixed(1) : 'N/A',
+'Ordered Units YoY %': item.orderedUnitsYoY ? item.orderedUnitsYoY.toFixed(1) : 'N/A'
+})));
 
 const wb = XLSX.utils.book_new();
 XLSX.utils.book_append_sheet(wb, ws, 'Vendor Performance Report');
@@ -1965,49 +1837,21 @@ this.showError('Export failed: ' + error.message);
 
 exportCSV() {
 try {
-                    const csvData = this.processedData.map(item => ({
-                        'ASIN': item.asin,
-                        'Product Title': item.title,
-                        'Brand': item.brand,
-                        'Ordered Units': item.orderedUnits,
-                        'Ordered Revenue': item.orderedRevenue,
-                        'Page Views': item.pageViews,
-                        'Conversion Rate %': item.conversionRate.toFixed(2),
-                        'Daily Sales': item.dailySales.toFixed(2),
-                        'Net PPM %': item.netPPM.toFixed(2),
-                        'Lead Time Days': item.leadTime.toFixed(0),
-                        '90+ Days Inventory %': item.aged90Percent.toFixed(1),
-                        'Ordered Revenue YoY %': item.orderedRevenueYoY ? item.orderedRevenueYoY.toFixed(1) : 'N/A',
-                        'Ordered Units YoY %': item.orderedUnitsYoY ? item.orderedUnitsYoY.toFixed(1) : 'N/A'
-                    }));
-                    const csvData = this.processedData.map(item => {
-                        const dailySalesUnits = item.orderedUnits / this.daysInPeriod;
-                        const stockDays = dailySalesUnits > 0 ? item.sellableUnits / dailySalesUnits : null;
-                        const riskDays = stockDays !== null ? stockDays - item.leadTime : null;
-                        const stockRisk = riskDays !== null ? (
-                            riskDays <= 0 ? 'CRITICAL' :
-                            riskDays <= 7 ? 'HIGH' :
-                            riskDays <= 14 ? 'MEDIUM' : 'LOW'
-                        ) : 'UNKNOWN';
-                        
-                        return {
-                            'ASIN': item.asin,
-                            'Product Title': item.title,
-                            'Brand': item.brand,
-                            'Ordered Units': item.orderedUnits,
-                            'Ordered Revenue': item.orderedRevenue,
-                            'Page Views': item.pageViews,
-                            'Conversion Rate %': item.conversionRate.toFixed(2),
-                            'Daily Sales': item.dailySales.toFixed(2),
-                            'Net PPM %': item.netPPM.toFixed(2),
-                            'Lead Time Days': item.leadTime.toFixed(0),
-                            '90+ Days Inventory %': item.aged90Percent.toFixed(1),
-                            'Days of Stock': stockDays !== null ? stockDays.toFixed(0) : 'N/A',
-                            'Stock Risk Level': stockRisk,
-                            'Ordered Revenue YoY %': item.orderedRevenueYoY ? item.orderedRevenueYoY.toFixed(1) : 'N/A',
-                            'Ordered Units YoY %': item.orderedUnitsYoY ? item.orderedUnitsYoY.toFixed(1) : 'N/A'
-                        };
-                    });
+const csvData = this.processedData.map(item => ({
+'ASIN': item.asin,
+'Product Title': item.title,
+'Brand': item.brand,
+'Ordered Units': item.orderedUnits,
+'Ordered Revenue': item.orderedRevenue,
+'Page Views': item.pageViews,
+'Conversion Rate %': item.conversionRate.toFixed(2),
+'Daily Sales': item.dailySales.toFixed(2),
+'Net PPM %': item.netPPM.toFixed(2),
+'Lead Time Days': item.leadTime.toFixed(0),
+'90+ Days Inventory %': item.aged90Percent.toFixed(1),
+'Ordered Revenue YoY %': item.orderedRevenueYoY ? item.orderedRevenueYoY.toFixed(1) : 'N/A',
+'Ordered Units YoY %': item.orderedUnitsYoY ? item.orderedUnitsYoY.toFixed(1) : 'N/A'
+}));
 
 const csv = Papa.unparse(csvData);
 const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
