@@ -831,7 +831,7 @@ const file = event.target.files[0];
 try {
 this.validateFile(file);
 this.updateFileStatus(type, 'active', 'Processing...');
-this.calculatePeriodFromFilename(file.name);
+this.calculateDaysFromFilename(file.name);
 if (file.name.match(/\.(xlsx|xls)$/i)) {
 this.processExcel(file, type);
 } else {
