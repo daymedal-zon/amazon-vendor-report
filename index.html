@@ -971,6 +971,16 @@ mergeData() {
 const merged = [];
 try {
 console.log('🔄 Starting data merge with US/UK column support...');
+
+// DEBUG: Log actual column names from uploaded files
+console.log('=== SALES COLUMNS (first 5) ===');
+console.log(Object.keys(this.salesData[0]).slice(0, 5));
+console.log('=== TRAFFIC COLUMNS (first 5) ===');  
+console.log(Object.keys(this.trafficData[0]).slice(0, 5));
+console.log('=== INVENTORY COLUMNS (first 5) ===');
+console.log(Object.keys(this.inventoryData[0]).slice(0, 5));
+console.log('========================');
+
 if (!this.salesData || this.salesData.length === 0) {
 throw new Error('Sales data is empty');
 }
