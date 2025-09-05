@@ -854,8 +854,49 @@ const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: "" });
 if (jsonData.length < 2) {
 throw new Error('File appears empty');
 }
-const headers = jsonData[0];
-const rows = jsonData.slice(1);
+// SMART HEADER DETECTION - Find actual data headers, not metadata
+let headerRowIndex = -1;
+let headers = null;
+
+// Look for the row containing clean "ASIN" column (not metadata like "View By=[ASIN]")
+for (let i = 0; i < Math.min(10, jsonData.length); i++) {
+const row = jsonData[i];
+if (row && row.length > 0) {
+const hasASIN = row.some(cell => String(cell).trim() === 'ASIN');
+const hasProductTitle = row.some(cell => 
+String(cell).includes('Product') && (String(cell).includes('Title') || String(cell).includes('title'))
+);
+if (hasASIN && hasProductTitle) {
+headerRowIndex = i;
+headers = row;
+console.log(`Found data headers in row ${i} for ${type} file`);
+break;
+}
+}
+}
+
+// Fallback: skip obvious metadata rows
+if (headerRowIndex === -1) {
+for (let i = 0; i < Math.min(10, jsonData.length); i++) {
+const row = jsonData[i];
+if (row && row.length > 3) {
+const isMetadata = row.some(cell => 
+String(cell).includes('=[') || String(cell).includes('Program=') || String(cell).includes('View By=')
+);
+if (!isMetadata) {
+headerRowIndex = i;
+headers = row;
+break;
+}
+}
+}
+}
+
+if (!headers || headerRowIndex === -1) {
+throw new Error('Could not find data headers in file');
+}
+
+const rows = jsonData.slice(headerRowIndex + 1);  
 this[type + 'Data'] = rows.map(row => {
 const obj = {};
 headers.forEach((header, index) => {
