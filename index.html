@@ -9,14 +9,12 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" integrity="sha512-r22gChDnGvBylk90+2e/ycr3RVrDi8DIOkIGNhJlKfuyQM4tIRAI062MaV8sfjQKYVGjOBaZBOA87z+IhZE9DA==" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js" integrity="sha512-SGWgwwRA8xZgEoKiex3UubkSkV1zSE1BS6O4pXcaxcNtUlQsOmOmhVnDwIvqGRfEmuz83tIGL13cXMZn6upPyg==" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js" integrity="sha512-ElRFoEQdI5Ht6kZvyzXhYG9NqjtkmlkfYk0wr6wHxU9JEHakS7UJZNeml5ALk+8IKlU6jDgMabC3vkumRokgJA==" crossorigin="anonymous"></script>
-
 <style>
 * {
 margin: 0;
 padding: 0;
 box-sizing: border-box;
 }
-
 body {
 font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 background: linear-gradient(135deg, #1A1A1A 0%, #2D2D2D 50%, #1A1A1A 100%);
@@ -24,17 +22,15 @@ min-height: 100vh;
 color: #BFC3C9;
 font-weight: 400;
 }
-
 .container {
 max-width: 1400px;
 margin: 0 auto;
 padding: 20px;
 }
-
 .header {
 text-align: center;
 margin-bottom: 30px;
-color: white;
+color: #BFC3C9;
 padding: 40px 0;
 background: linear-gradient(135deg, #007F5F 0%, #005D45 100%);
 border-radius: 20px;
@@ -42,7 +38,6 @@ box-shadow: 0 20px 40px rgba(0, 127, 95, 0.3);
 position: relative;
 overflow: hidden;
 }
-
 .header::before {
 content: '';
 position: absolute;
@@ -53,7 +48,6 @@ bottom: 0;
 background: linear-gradient(45deg, transparent 45%, rgba(0, 255, 127, 0.03) 50%, transparent 55%);
 z-index: 1;
 }
-
 .header h1 {
 font-family: 'Orbitron', monospace;
 font-size: 3.2rem;
@@ -63,12 +57,11 @@ letter-spacing: 3px;
 position: relative;
 z-index: 2;
 color: #00FF7F;
-text-shadow: 
+text-shadow:
 0 0 20px rgba(0, 255, 127, 0.8),
 0 0 40px rgba(0, 255, 127, 0.4),
 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
-
 .header p {
 font-family: 'Inter', sans-serif;
 font-size: 1.2rem;
@@ -77,11 +70,10 @@ position: relative;
 z-index: 2;
 font-weight: 300;
 letter-spacing: 0.5px;
-color: #E8E8E8;
+color: #BFC3C9;
 text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4);
 opacity: 0.95;
 }
-
 .upload-section {
 background: linear-gradient(135deg, #2D2D2D 0%, #1A1A1A 100%);
 border: 1px solid #007F5F;
@@ -90,16 +82,14 @@ padding: 30px;
 margin-bottom: 30px;
 box-shadow: 0 15px 35px rgba(0, 127, 95, 0.2);
 }
-
 .upload-section h2 {
 margin-bottom: 20px;
-color: #FFFFFF;
+color: #BFC3C9;
 text-align: center;
 font-family: 'Orbitron', monospace;
 font-weight: 700;
 font-size: 1.5rem;
 }
-
 .note {
 background: linear-gradient(135deg, #007F5F 0%, #005D45 100%);
 border-left: 4px solid #00FF7F;
@@ -107,17 +97,15 @@ padding: 15px;
 margin: 20px 0;
 border-radius: 0 12px 12px 0;
 font-size: 0.9rem;
-color: #FFFFFF;
+color: #BFC3C9;
 font-weight: 400;
 }
-
 .file-upload-grid {
 display: grid;
-grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
 gap: 20px;
 margin-bottom: 20px;
 }
-
 .file-upload {
 border: 2px dashed #007F5F;
 border-radius: 15px;
@@ -127,33 +115,27 @@ transition: all 0.3s ease;
 cursor: pointer;
 background: linear-gradient(135deg, #1A1A1A 0%, #2D2D2D 100%);
 }
-
 .file-upload:hover {
 border-color: #00FF7F;
 background: linear-gradient(135deg, #2D2D2D 0%, #1A1A1A 100%);
 box-shadow: 0 10px 25px rgba(0, 255, 127, 0.2);
 }
-
 .file-upload.active {
 border-color: #00FF7F;
 background: linear-gradient(135deg, #007F5F 0%, #005D45 100%);
 box-shadow: 0 15px 30px rgba(0, 255, 127, 0.3);
 }
-
 .file-upload.error {
 border-color: #FF6B6B;
 background: linear-gradient(135deg, #2D1A1A 0%, #1A1A1A 100%);
 }
-
 .file-upload.success {
 border-color: #00FF7F;
 background: linear-gradient(135deg, #1A2D1A 0%, #0D1A0D 100%);
 }
-
 .file-upload input {
 display: none;
 }
-
 .file-upload label {
 cursor: pointer;
 font-weight: 600;
@@ -161,24 +143,20 @@ color: #BFC3C9;
 display: block;
 font-family: 'Inter', sans-serif;
 }
-
 .file-status {
 margin-top: 10px;
 font-size: 0.9rem;
 font-weight: 500;
 }
-
 .file-status.success {
 color: #00FF7F;
 }
-
 .file-status.error {
 color: #FF6B6B;
 }
-
 .process-btn {
 background: linear-gradient(135deg, #007F5F 0%, #005D45 100%);
-color: white;
+color: #BFC3C9;
 border: none;
 padding: 15px 30px;
 border-radius: 25px;
@@ -192,19 +170,17 @@ font-family: 'Orbitron', monospace;
 letter-spacing: 1px;
 box-shadow: 0 10px 25px rgba(0, 127, 95, 0.3);
 }
-
 .process-btn:hover:not(:disabled) {
 transform: translateY(-3px);
 box-shadow: 0 15px 35px rgba(0, 255, 127, 0.4);
 background: linear-gradient(135deg, #00FF7F 0%, #007F5F 100%);
+color: #1A1A1A;
 }
-
 .process-btn:disabled {
 opacity: 0.6;
 cursor: not-allowed;
 transform: none;
 }
-
 .error-message {
 background: linear-gradient(135deg, #2D1A1A 0%, #1A1A1A 100%);
 border: 1px solid #FF6B6B;
@@ -214,7 +190,6 @@ border-radius: 12px;
 margin: 20px 0;
 display: none;
 }
-
 .success-message {
 background: linear-gradient(135deg, #1A2D1A 0%, #0D1A0D 100%);
 border: 1px solid #00FF7F;
@@ -224,7 +199,6 @@ border-radius: 12px;
 margin: 20px 0;
 display: none;
 }
-
 .loading {
 text-align: center;
 padding: 40px;
@@ -235,7 +209,6 @@ border-radius: 20px;
 box-shadow: 0 15px 35px rgba(0, 127, 95, 0.2);
 display: none;
 }
-
 .loading-spinner {
 display: inline-block;
 width: 20px;
@@ -246,22 +219,18 @@ border-radius: 50%;
 border-top-color: #00FF7F;
 animation: spin 1s linear infinite;
 }
-
 @keyframes spin {
 to { transform: rotate(360deg); }
 }
-
 .dashboard {
 display: none;
 grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
 gap: 25px;
 margin-top: 30px;
 }
-
 .dashboard.show {
 display: grid;
 }
-
 .metric-card {
 background: linear-gradient(135deg, #2D2D2D 0%, #1A1A1A 100%);
 border: 1px solid #007F5F;
@@ -272,7 +241,6 @@ transition: all 0.3s ease;
 position: relative;
 overflow: hidden;
 }
-
 .metric-card::before {
 content: '';
 position: absolute;
@@ -283,13 +251,11 @@ height: 3px;
 background: linear-gradient(90deg, #007F5F 0%, #00FF7F 50%, #007F5F 100%);
 z-index: 1;
 }
-
 .metric-card:hover {
 transform: translateY(-8px);
 box-shadow: 0 25px 50px rgba(0, 255, 127, 0.3);
 border-color: #00FF7F;
 }
-
 .metric-card h3 {
 color: #BFC3C9;
 margin-bottom: 20px;
@@ -299,7 +265,6 @@ letter-spacing: 2px;
 font-family: 'Orbitron', monospace;
 font-weight: 700;
 }
-
 .metric-value {
 font-size: 2.4rem;
 font-weight: 900;
@@ -310,25 +275,61 @@ text-shadow: 0 0 20px rgba(0, 255, 127, 0.5);
 line-height: 1.1;
 word-break: break-all;
 }
-
 .metric-change {
 font-size: 0.95rem;
 font-weight: 600;
 font-family: 'Inter', sans-serif;
 }
-
 .metric-change.positive {
 color: #00FF7F;
 }
-
 .metric-change.negative {
 color: #FF6B6B;
 }
-
 .metric-change.neutral {
 color: #BFC3C9;
 }
-
+.export-section {
+grid-column: span 2;
+text-align: center;
+padding: 25px;
+background: linear-gradient(135deg, #2D2D2D 0%, #1A1A1A 100%);
+border: 1px solid #007F5F;
+border-radius: 20px;
+box-shadow: 0 15px 35px rgba(0, 127, 95, 0.2);
+display: none;
+}
+.export-section.show {
+display: block;
+}
+.export-section h3 {
+color: #BFC3C9;
+margin-bottom: 20px;
+font-family: 'Orbitron', monospace;
+font-weight: 700;
+}
+.export-btn {
+background: linear-gradient(135deg, #007F5F 0%, #005D45 100%);
+color: #BFC3C9;
+border: none;
+padding: 12px 20px;
+border-radius: 12px;
+margin: 5px;
+cursor: pointer;
+font-weight: 600;
+transition: all 0.3s ease;
+font-family: 'Inter', sans-serif;
+box-shadow: 0 8px 20px rgba(0, 127, 95, 0.3);
+min-width: 160px;
+flex: 1;
+max-width: 200px;
+}
+.export-btn:hover {
+background: linear-gradient(135deg, #00FF7F 0%, #007F5F 100%);
+transform: translateY(-2px);
+box-shadow: 0 12px 25px rgba(0, 255, 127, 0.4);
+color: #1A1A1A;
+}
 .chart-container {
 grid-column: span 2;
 background: linear-gradient(135deg, #2D2D2D 0%, #1A1A1A 100%);
@@ -338,18 +339,15 @@ padding: 30px;
 box-shadow: 0 15px 35px rgba(0, 127, 95, 0.2);
 height: 400px;
 }
-
 .chart-container h3 {
 color: #BFC3C9;
 margin-bottom: 20px;
 font-family: 'Orbitron', monospace;
 font-weight: 700;
 }
-
 .chart-container canvas {
 max-height: 320px !important;
 }
-
 .data-table {
 grid-column: span 3;
 background: linear-gradient(135deg, #2D2D2D 0%, #1A1A1A 100%);
@@ -359,7 +357,6 @@ padding: 30px;
 box-shadow: 0 15px 35px rgba(0, 127, 95, 0.2);
 overflow-x: auto;
 }
-
 .summary-section {
 grid-column: span 3;
 background: linear-gradient(135deg, #2D2D2D 0%, #1A1A1A 100%);
@@ -368,21 +365,18 @@ border-radius: 20px;
 padding: 30px;
 box-shadow: 0 15px 35px rgba(0, 127, 95, 0.2);
 }
-
 .summary-section h3 {
 color: #BFC3C9;
 margin-bottom: 20px;
 font-family: 'Orbitron', monospace;
 font-weight: 700;
 }
-
 .summary-grid {
 display: grid;
 grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
 gap: 25px;
 margin-top: 20px;
 }
-
 .summary-card {
 background: linear-gradient(135deg, #1A1A1A 0%, #2D2D2D 100%);
 border: 1px solid #007F5F;
@@ -390,7 +384,6 @@ border-radius: 15px;
 padding: 25px;
 border-left: 4px solid #00FF7F;
 }
-
 .summary-card h4 {
 color: #00FF7F;
 margin-bottom: 15px;
@@ -398,19 +391,16 @@ font-size: 1.1rem;
 font-family: 'Orbitron', monospace;
 font-weight: 700;
 }
-
 .summary-card p {
 color: #BFC3C9;
 margin-bottom: 15px;
 font-size: 0.9rem;
 line-height: 1.5;
 }
-
 .summary-list {
 list-style: none;
 padding: 0;
 }
-
 .summary-list li {
 padding: 12px 0;
 border-bottom: 1px solid #007F5F;
@@ -418,41 +408,35 @@ font-size: 0.9rem;
 color: #BFC3C9;
 line-height: 1.4;
 }
-
 .summary-list li:last-child {
 border-bottom: none;
 }
-
 .data-table h3 {
 color: #BFC3C9;
 margin-bottom: 20px;
 font-family: 'Orbitron', monospace;
 font-weight: 700;
 }
-
 .data-table p {
 color: #BFC3C9;
 margin-bottom: 15px;
 font-size: 0.9rem;
 }
-
 table {
 width: 100%;
 border-collapse: collapse;
 margin-top: 15px;
 }
-
 th, td {
 text-align: left;
 padding: 15px 12px;
 border-bottom: 1px solid #007F5F;
 color: #BFC3C9;
 }
-
 th {
 background: linear-gradient(135deg, #007F5F 0%, #005D45 100%);
 font-weight: 700;
-color: #FFFFFF;
+color: #BFC3C9;
 position: sticky;
 top: 0;
 font-family: 'Inter', sans-serif;
@@ -460,55 +444,9 @@ font-size: 0.9rem;
 text-transform: uppercase;
 letter-spacing: 1px;
 }
-
 tr:hover {
 background: linear-gradient(135deg, rgba(0, 127, 95, 0.1) 0%, rgba(0, 255, 127, 0.05) 100%);
 }
-
-.export-section {
-grid-column: span 1;
-text-align: center;
-padding: 25px;
-background: linear-gradient(135deg, #2D2D2D 0%, #1A1A1A 100%);
-border: 1px solid #007F5F;
-border-radius: 20px;
-box-shadow: 0 15px 35px rgba(0, 127, 95, 0.2);
-display: none;
-}
-
-.export-section.show {
-display: block;
-}
-
-.export-section h3 {
-color: #BFC3C9;
-margin-bottom: 20px;
-font-family: 'Orbitron', monospace;
-font-weight: 700;
-}
-
-.export-btn {
-background: linear-gradient(135deg, #007F5F 0%, #005D45 100%);
-color: white;
-border: none;
-padding: 12px 20px;
-border-radius: 12px;
-margin: 5px 15px;
-cursor: pointer;
-font-weight: 600;
-transition: all 0.3s ease;
-font-family: 'Inter', sans-serif;
-box-shadow: 0 8px 20px rgba(0, 127, 95, 0.3);
-display: block;
-width: 180px;
-}
-
-.export-btn:hover {
-background: linear-gradient(135deg, #00FF7F 0%, #007F5F 100%);
-transform: translateY(-2px);
-box-shadow: 0 12px 25px rgba(0, 255, 127, 0.4);
-}
-
 .version-info {
 position: fixed;
 bottom: 15px;
@@ -524,76 +462,31 @@ font-weight: 700;
 border: 1px solid #007F5F;
 box-shadow: 0 5px 15px rgba(0, 127, 95, 0.3);
 }
-
 @media (max-width: 768px) {
 .chart-container,
 .data-table,
 .summary-section {
 grid-column: span 1;
 }
-
 .header h1 {
 font-size: 2.4rem;
 letter-spacing: 2px;
 }
-
 .metric-value {
 font-size: 2.2rem;
 }
+.file-upload-grid {
+grid-template-columns: 1fr;
 }
-padding: 20px;
-background: white;
-border-radius: 15px;
-box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-display: none;
-}
-
-.export-section.show {
-display: block;
-}
-
-.export-btn {
-background: #27AE60;
-color: white;
-border: none;
-padding: 12px 25px;
-border-radius: 20px;
-margin: 0 10px;
-cursor: pointer;
-font-weight: 600;
-transition: all 0.3s ease;
-}
-
-.export-btn:hover {
-background: #219A52;
-transform: translateY(-2px);
-}
-
-.version-info {
-position: fixed;
-bottom: 10px;
-right: 10px;
-background: rgba(0,0,0,0.7);
-color: white;
-padding: 5px 10px;
-border-radius: 15px;
-font-size: 0.8rem;
-z-index: 1000;
-}
-
-@media (max-width: 768px) {
-.chart-container,
-.data-table,
-.summary-section {
+.export-section {
 grid-column: span 1;
 }
-
-.header h1 {
-font-size: 2rem;
+.export-section div {
+flex-direction: column;
 }
-
-.metric-value {
-font-size: 2rem;
+.export-btn {
+max-width: none;
+width: 100%;
 }
 }
 </style>
@@ -602,18 +495,15 @@ font-size: 2rem;
 <div class="container">
 <div class="header">
 <h1>Zon Amazon Analytics</h1>
-<p>The one-stop Amazon analytics dashboard for publishers</p>
+<p>See inside the machine</p>
 </div>
-
 <div class="upload-section">
 <h2>Upload Your Excel Reports</h2>
 <div class="note">
-<strong>Note:</strong> Upload your Amazon Vendor Central Excel files below. Supports files up to 50MB.
+<strong>Note:</strong> Supports both US and UK Amazon Vendor Central formats. Supports files up to 50MB.
 </div>
-
 <div class="error-message" id="errorMessage"></div>
 <div class="success-message" id="successMessage"></div>
-
 <div class="file-upload-grid">
 <div class="file-upload" id="salesUpload">
 <input type="file" id="salesFile" accept=".xlsx,.xls,.csv" />
@@ -642,83 +532,70 @@ font-size: 2rem;
 </div>
 <button class="process-btn" id="processBtn" disabled>Generate Dashboard</button>
 </div>
-
 <div id="loading" class="loading">
 Processing your data...<span class="loading-spinner"></span>
 </div>
-
 <div class="dashboard" id="dashboard">
 <div class="metric-card">
 <h3>Ordered Units</h3>
 <div class="metric-value" id="orderedUnits">0</div>
 <div class="metric-change" id="orderedUnitsChange"></div>
 </div>
-
 <div class="metric-card">
 <h3>Ordered Revenue</h3>
 <div class="metric-value" id="orderedRevenue">£0</div>
 <div class="metric-change" id="orderedRevenueChange"></div>
 </div>
-
 <div class="metric-card">
 <h3>Featured Page Views</h3>
 <div class="metric-value" id="pageViews">0</div>
 <div class="metric-change" id="pageViewsChange"></div>
 </div>
-
 <div class="metric-card">
 <h3>Conversion Rate</h3>
 <div class="metric-value" id="conversionRate">0%</div>
 <div class="metric-change" id="conversionRateChange"></div>
 </div>
-
 <div class="metric-card">
 <h3>Daily Sales</h3>
 <div class="metric-value" id="dailySales">£0</div>
 <div class="metric-change" id="dailySalesChange"></div>
 </div>
-
 <div class="metric-card">
 <h3>Net PPM %</h3>
 <div class="metric-value" id="netPPM">0%</div>
 <div class="metric-change" id="netPPMChange"></div>
 </div>
-
 <div class="metric-card">
 <h3>Vendor Lead Time</h3>
 <div class="metric-value" id="vendorLeadTime">0 days</div>
 <div class="metric-change" id="vendorLeadTimeChange"></div>
 </div>
-
 <div class="metric-card">
-                <h3>90+ Days Inventory %</h3>
-                <div class="metric-value" id="aged90Percent">0%</div>
-                <div class="metric-change" id="aged90PercentChange"></div>
-                <h3>Low Stock Titles</h3>
-                <div class="metric-value" id="lowStockCount">0</div>
-                <div class="metric-change" id="lowStockChange">≤14 days remaining</div>
+<h3>90+ Days Inventory %</h3>
+<div class="metric-value" id="aged90Percent">0%</div>
+<div class="metric-change" id="aged90PercentChange"></div>
 </div>
-
+<div class="metric-card">
+<h3>Low Stock Titles</h3>
+<div class="metric-value" id="lowStockTitles">0</div>
+<div class="metric-change" id="lowStockTitlesChange">≤14 days stock</div>
+</div>
 <div class="export-section show" id="exportSection">
 <h3>Export Your Report</h3>
-                <button class="export-btn" id="exportExcel">📊 Export to Excel</button>
-                <button class="export-btn" id="exportCSV">📋 Export to CSV</button>
-                <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
-                    <button class="export-btn" id="exportExcel">📊 Export to Excel</button>
-                    <button class="export-btn" id="exportCSV">📋 Export to CSV</button>
-                </div>
+<div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+<button class="export-btn" id="exportExcel">📊 Export to Excel</button>
+<button class="export-btn" id="exportCSV">📋 Export to CSV</button>
 </div>
-
+</div>
 <div class="chart-container">
 <h3>Revenue Trend</h3>
 <canvas id="revenueChart"></canvas>
 </div>
-
 <div class="chart-container">
-<h3>Top Products by Revenue</h3>
-<canvas id="productsChart"></canvas>
+<h3>Brand & Series Revenue</h3>
+<canvas id="brandSeriesChart"></canvas>
 </div>
-
 <div class="summary-section">
 <h3>Performance Insights</h3>
 <div class="summary-grid">
@@ -733,16 +610,15 @@ Processing your data...<span class="loading-spinner"></span>
 <ul class="summary-list" id="revenueRecoveryList"></ul>
 </div>
 <div class="summary-card">
-<h4>📈 Top Revenue Products</h4>
-<p>Highest performing products by revenue</p>
-<ul class="summary-list" id="topRevenueList"></ul>
+<h4>📚 Smart Brand & Series Analysis</h4>
+<p>Intelligent grouping of your products by publisher, series, and collections</p>
+<ul class="summary-list" id="brandSeriesList"></ul>
 </div>
 </div>
 </div>
-
 <div class="data-table">
 <h3>Product Performance Summary (Top 50)</h3>
-<p style="color: #666; margin-bottom: 15px;">Limited to top 50 products by revenue. Export for complete dataset.</p>
+<p style="color: #BFC3C9; margin-bottom: 15px;">Limited to top 50 products by revenue. Export for complete dataset.</p>
 <div style="overflow-x: auto;">
 <table id="performanceTable">
 <thead>
@@ -756,6 +632,7 @@ Processing your data...<span class="loading-spinner"></span>
 <th>Daily Sales</th>
 <th>Lead Time (days)</th>
 <th>90+ Days Inventory %</th>
+<th>Days of Stock</th>
 <th>Net PPM %</th>
 </tr>
 </thead>
@@ -765,18 +642,10 @@ Processing your data...<span class="loading-spinner"></span>
 </div>
 </div>
 </div>
-
-<div class="export-section" id="exportSection">
-<h3>Export Your Report</h3>
-<button class="export-btn" id="exportExcel">📊 Export to Excel</button>
-<button class="export-btn" id="exportCSV">📋 Export to CSV</button>
-</div>
-
 <div class="version-info">
-v1.02 | Zon Analytics
+v1.9 | Zon Analytics
 </div>
 </div>
-
 <script>
 class VendorDashboard {
 constructor() {
@@ -785,7 +654,7 @@ this.trafficData = [];
 this.inventoryData = [];
 this.processedData = [];
 this.charts = {};
-this.daysInPeriod = 42; // Default: will be calculated from filename
+this.daysInPeriod = 42;
 this.maxFileSize = 50 * 1024 * 1024;
 this.init();
 }
@@ -800,31 +669,24 @@ this.showError('Failed to initialize dashboard');
 }
 }
 
+// ENHANCED US/UK DATE FORMAT SUPPORT
 normalizeTrafficData(filename) {
 try {
-// Check if traffic file has extra days compared to sales/inventory
 const trafficDays = this.calculateDaysFromFilename(filename);
 const expectedDays = this.daysInPeriod;
-
 if (trafficDays > expectedDays) {
 const extraDays = trafficDays - expectedDays;
 console.log(`Traffic data has ${extraDays} extra day(s). Normalizing...`);
-
-// Calculate daily average and reduce by extra days
 this.trafficData.forEach(row => {
 const pageViewsCol = 'Featured offer page views';
 const pageViews = parseInt(String(row[pageViewsCol] || 0).replace(/[,]/g, '')) || 0;
-
 if (pageViews > 0) {
-// Calculate daily average and multiply by correct number of days
 const dailyAverage = pageViews / trafficDays;
 const adjustedPageViews = Math.round(dailyAverage * expectedDays);
 row[pageViewsCol] = adjustedPageViews;
-
 console.log(`ASIN ${row.ASIN}: ${pageViews} → ${adjustedPageViews} page views (removed ${extraDays} day)`);
 }
 });
-
 console.log(`✅ Traffic data normalized from ${trafficDays} to ${expectedDays} days`);
 }
 } catch (error) {
@@ -834,31 +696,78 @@ console.warn('Traffic normalization failed:', error);
 
 calculateDaysFromFilename(filename) {
 try {
-const dateMatch = filename.match(/(\d{2}[\-]?\d{2}[\-]?\d{4})_(\d{2}[\-]?\d{2}[\-]?\d{4})/);
-
+// First try UK format (DDMMYYYY)
+let dateMatch = filename.match(/(\d{2}[\-]?\d{2}[\-]?\d{4})_(\d{2}[\-]?\d{2}[\-]?\d{4})/);
+// If no UK format found, try US format (MMDDYYYY) - HEP Support
+if (!dateMatch) {
+dateMatch = filename.match(/(\d{6,8})_(\d{6,8})/);
 if (dateMatch) {
-const startDateStr = dateMatch[1].replace(/[\-]/g, '');
-const endDateStr = dateMatch[2].replace(/[\-]/g, '');
+console.log('🇺🇸 Detected US date format (MMDDYYYY) - HEP Compatible');
+const startDateStr = dateMatch[1];
+const endDateStr = dateMatch[2];
+let startMonth, startDay, startYear, endMonth, endDay, endYear;
+// Parse start date (US format: MMDDYYYY or MMDDYY)
+if (startDateStr.length === 6) {
+// MMDDYY format
+startMonth = parseInt(startDateStr.substring(0, 2)) - 1;
+startDay = parseInt(startDateStr.substring(2, 4));
+startYear = parseInt(startDateStr.substring(4, 8));
+} else {
+// MDDYY format (single digit month)
+startMonth = parseInt(startDateStr.substring(0, 1)) - 1;
+startDay = parseInt(startDateStr.substring(1, 3));
+startYear = 2000 + parseInt(startDateStr.substring(3, 5));
+}
 
-const startDay = parseInt(startDateStr.substring(0, 2));
-const startMonth = parseInt(startDateStr.substring(2, 4)) - 1;
-const startYear = parseInt(startDateStr.substring(4, 8));
-
-const endDay = parseInt(endDateStr.substring(0, 2));
-const endMonth = parseInt(endDateStr.substring(2, 4)) - 1;
-const endYear = parseInt(endDateStr.substring(4, 8));
+// Parse end date (US format)
+if (endDateStr.length === 6) {
+endMonth = parseInt(endDateStr.substring(0, 2)) - 1;
+endDay = parseInt(endDateStr.substring(2, 4));
+endYear = 2000 + parseInt(endDateStr.substring(4, 6));
+} else if (endDateStr.length === 8) {
+endMonth = parseInt(endDateStr.substring(0, 2)) - 1;
+endDay = parseInt(endDateStr.substring(2, 4));
+endYear = parseInt(endDateStr.substring(4, 8));
+} else {
+endMonth = parseInt(endDateStr.substring(0, 1)) - 1;
+endDay = parseInt(endDateStr.substring(1, 3));
+endYear = 2000 + parseInt(endDateStr.substring(3, 5));
+}
 
 const startDate = new Date(startYear, startMonth, startDay);
 const endDate = new Date(endYear, endMonth, endDay);
-
 const diffTime = Math.abs(endDate - startDate);
-return Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+this.daysInPeriod = diffDays;
+console.log(`✅ US Format: ${diffDays} days (${startMonth+1}/${startDay}/${startYear} to ${endMonth+1}/${endDay}/${endYear})`);
+return diffDays;
+}
 }
 
-return this.daysInPeriod; // fallback
-} catch (error) {
-return this.daysInPeriod; // fallback
+// UK format parsing (existing logic)
+if (dateMatch) {
+console.log('🇬🇧 Detected UK date format (DDMMYYYY)');
+const startDateStr = dateMatch[1].replace(/[\-]/g, '');
+const endDateStr = dateMatch[2].replace(/[\-]/g, '');
+const startDay = parseInt(startDateStr.substring(0, 2));
+const startMonth = parseInt(startDateStr.substring(2, 4)) - 1;
+const startYear = parseInt(startDateStr.substring(4, 8));
+const endDay = parseInt(endDateStr.substring(0, 2));
+const endMonth = parseInt(endDateStr.substring(2, 4)) - 1;
+const endYear = parseInt(endDateStr.substring(4, 8));
+const startDate = new Date(startYear, startMonth, startDay);
+const endDate = new Date(endYear, endMonth, endDay);
+const diffTime = Math.abs(endDate - startDate);
+const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+this.daysInPeriod = diffDays;
+console.log(`✅ UK Format: ${diffDays} days (${startDay}/${startMonth+1}/${startYear} to ${endDay}/${endMonth+1}/${endYear})`);
+return diffDays;
 }
+} catch (error) {
+console.warn('Could not parse date from filename, using default 46 days:', error);
+this.daysInPeriod = 46;
+}
+return this.daysInPeriod;
 }
 
 bindEvents() {
@@ -866,7 +775,6 @@ const salesFile = document.getElementById('salesFile');
 const trafficFile = document.getElementById('trafficFile');
 const inventoryFile = document.getElementById('inventoryFile');
 const processBtn = document.getElementById('processBtn');
-
 if (salesFile) salesFile.addEventListener('change', (e) => this.handleFile(e, 'sales'));
 if (trafficFile) trafficFile.addEventListener('change', (e) => this.handleFile(e, 'traffic'));
 if (inventoryFile) inventoryFile.addEventListener('change', (e) => this.handleFile(e, 'inventory'));
@@ -876,7 +784,6 @@ if (processBtn) processBtn.addEventListener('click', () => this.processData());
 bindExportEvents() {
 const exportExcel = document.getElementById('exportExcel');
 const exportCSV = document.getElementById('exportCSV');
-
 if (exportExcel) exportExcel.addEventListener('click', () => this.exportExcel());
 if (exportCSV) exportCSV.addEventListener('click', () => this.exportCSV());
 }
@@ -902,7 +809,6 @@ setTimeout(() => div.style.display = 'none', 3000);
 updateFileStatus(type, status, msg) {
 const statusDiv = document.getElementById(type + 'Status');
 const uploadDiv = document.getElementById(type + 'Upload');
-
 if (statusDiv) {
 statusDiv.textContent = msg;
 statusDiv.className = 'file-status ' + status;
@@ -922,14 +828,10 @@ return true;
 
 handleFile(event, type) {
 const file = event.target.files[0];
-
 try {
 this.validateFile(file);
 this.updateFileStatus(type, 'active', 'Processing...');
-
-// Extract date range from filename to calculate period length
-this.calculatePeriodFromFilename(file.name);
-
+this.calculateDaysFromFilename(file.name);
 if (file.name.match(/\.(xlsx|xls)$/i)) {
 this.processExcel(file, type);
 } else {
@@ -941,40 +843,6 @@ this.showError('Error: ' + error.message);
 }
 }
 
-calculatePeriodFromFilename(filename) {
-try {
-// Extract dates from filename pattern: *_01072025_31072025.* or *_01-07-2025_12-08-2025.*
-const dateMatch = filename.match(/(\d{2}[\-]?\d{2}[\-]?\d{4})_(\d{2}[\-]?\d{2}[\-]?\d{4})/);
-
-if (dateMatch) {
-const startDateStr = dateMatch[1].replace(/[\-]/g, '');
-const endDateStr = dateMatch[2].replace(/[\-]/g, '');
-
-// Parse dates: DDMMYYYY format
-const startDay = parseInt(startDateStr.substring(0, 2));
-const startMonth = parseInt(startDateStr.substring(2, 4)) - 1; // JS months are 0-based
-const startYear = parseInt(startDateStr.substring(4, 8));
-
-const endDay = parseInt(endDateStr.substring(0, 2));
-const endMonth = parseInt(endDateStr.substring(2, 4)) - 1;
-const endYear = parseInt(endDateStr.substring(4, 8));
-
-const startDate = new Date(startYear, startMonth, startDay);
-const endDate = new Date(endYear, endMonth, endDay);
-
-const diffTime = Math.abs(endDate - startDate);
-const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; // +1 to include both start and end dates
-
-this.daysInPeriod = diffDays;
-console.log(`Calculated period: ${diffDays} days (${startDay}/${startMonth+1}/${startYear} to ${endDay}/${endMonth+1}/${endYear})`);
-console.log(`Note: Amazon dashboard shows Jul 1 - Aug 15 (46 days) vs our ${diffDays} days`);
-}
-} catch (error) {
-console.warn('Could not parse date from filename, using Amazon standard 46 days:', error);
-this.daysInPeriod = 46; // Match Amazon's Jul 1 - Aug 15 period
-}
-}
-
 processExcel(file, type) {
 const reader = new FileReader();
 reader.onload = (e) => {
@@ -983,14 +851,60 @@ const data = new Uint8Array(e.target.result);
 const workbook = XLSX.read(data, { type: 'array' });
 const sheet = workbook.Sheets[workbook.SheetNames[0]];
 const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: "" });
-
 if (jsonData.length < 2) {
 throw new Error('File appears empty');
 }
 
-const headers = jsonData[0];
-const rows = jsonData.slice(1);
+// SMART HEADER DETECTION - Find actual data headers, not metadata
+let headerRowIndex = -1;
+let headers = null;
 
+// Look for the row containing clean "ASIN" column (not metadata like "View By=[ASIN]")
+for (let i = 0; i < Math.min(10, jsonData.length); i++) {
+const row = jsonData[i];
+if (row && row.length > 0) {
+// Check if this row contains clean data headers
+const hasASIN = row.some(cell => String(cell).trim() === 'ASIN');
+const hasProductTitle = row.some(cell => 
+String(cell).includes('Product') && (String(cell).includes('Title') || String(cell).includes('title'))
+);
+
+if (hasASIN && hasProductTitle) {
+headerRowIndex = i;
+headers = row;
+console.log(`Found data headers in row ${i} for ${type} file`);
+break;
+}
+}
+}
+
+// Fallback: if no clean headers found, use the last non-metadata row
+if (headerRowIndex === -1) {
+for (let i = 0; i < Math.min(10, jsonData.length); i++) {
+const row = jsonData[i];
+if (row && row.length > 3) {
+// Skip obvious metadata rows
+const isMetadata = row.some(cell => 
+String(cell).includes('=[') || 
+String(cell).includes('Program=') ||
+String(cell).includes('View By=') ||
+String(cell).includes('Countries=')
+);
+if (!isMetadata) {
+headerRowIndex = i;
+headers = row;
+console.log(`Using fallback headers in row ${i} for ${type} file`);
+break;
+}
+}
+}
+}
+
+if (!headers || headerRowIndex === -1) {
+throw new Error('Could not find data headers in file');
+}
+
+const rows = jsonData.slice(headerRowIndex + 1);
 this[type + 'Data'] = rows.map(row => {
 const obj = {};
 headers.forEach((header, index) => {
@@ -999,7 +913,6 @@ obj[String(header).trim()] = row[index] || '';
 return obj;
 }).filter(row => Object.values(row).some(val => val !== ''));
 
-// Normalize traffic data if it has extra days
 if (type === 'traffic') {
 this.normalizeTrafficData(file.name);
 }
@@ -1024,11 +937,10 @@ header: true,
 skipEmptyLines: true
 });
 
-this[type + 'Data'] = parsed.data.filter(row => 
+this[type + 'Data'] = parsed.data.filter(row =>
 Object.values(row).some(val => val !== null && val !== '')
 );
 
-// Normalize traffic data if it has extra days
 if (type === 'traffic') {
 this.normalizeTrafficData(file.name);
 }
@@ -1044,13 +956,11 @@ reader.readAsText(file);
 }
 
 checkReady() {
-const ready = this.salesData.length > 0 && 
-this.trafficData.length > 0 && 
+const ready = this.salesData.length > 0 &&
+this.trafficData.length > 0 &&
 this.inventoryData.length > 0;
-
 const btn = document.getElementById('processBtn');
 if (btn) btn.disabled = !ready;
-
 if (ready) {
 this.showSuccess('Ready to process!');
 }
@@ -1060,28 +970,22 @@ processData() {
 const loading = document.getElementById('loading');
 const dashboard = document.getElementById('dashboard');
 const exportSection = document.getElementById('exportSection');
-
 if (loading) loading.style.display = 'block';
 if (dashboard) dashboard.classList.remove('show');
 if (exportSection) exportSection.classList.remove('show');
-
 setTimeout(() => {
 try {
 this.processedData = this.mergeData();
-
 if (this.processedData.length === 0) {
 throw new Error('No data to process');
 }
-
 this.updateDashboard();
 this.createCharts();
 this.populateTable();
 this.populateInsights();
-
 if (loading) loading.style.display = 'none';
 if (dashboard) dashboard.classList.add('show');
 if (exportSection) exportSection.classList.add('show');
-
 this.bindExportEvents();
 this.showSuccess('Dashboard ready with ' + this.processedData.length + ' products!');
 } catch (error) {
@@ -1102,38 +1006,38 @@ parseYoY(value) {
 if (!value || value === '' || value === null || value === undefined) return null;
 const num = parseFloat(value);
 if (isNaN(num)) return null;
-
-// PRODUCTION-READY YoY PARSING based on extensive analysis
-// Pattern discovered: Amazon's export uses decimal format where
-// -0.1575 should be -15.75% but Amazon shows -9.17%
-// The discrepancy is due to different date ranges and data timing
-
-// Use simple decimal-to-percentage conversion for consistency
 if (Math.abs(num) <= 1) {
-return num * 100; // -0.1575 → -15.75%
+return Math.round(num * 10000) / 100;
 } else if (Math.abs(num) > 1 && Math.abs(num) <= 100) {
-return num; // 16.43 → 16.43%
+return Math.round(num * 100) / 100;
 } else {
-// Very large values might be basis points
-return num / 100; // 1643 → 16.43%
+return Math.round(num) / 100;
 }
 }
 
+// ENHANCED COLUMN SUPPORT - US/UK Variations
 mergeData() {
 const merged = [];
-
 try {
-console.log('Starting data merge process...');
+console.log('🔄 Starting data merge with US/UK column support...');
 
-// Validate input data exists
+// DEBUG: Log actual column names from uploaded files
+console.log('=== SALES COLUMNS (first 5) ===');
+console.log(Object.keys(this.salesData[0]).slice(0, 5));
+console.log('=== TRAFFIC COLUMNS (first 5) ===');  
+console.log(Object.keys(this.trafficData[0]).slice(0, 5));
+console.log('=== INVENTORY COLUMNS (first 5) ===');
+console.log(Object.keys(this.inventoryData[0]).slice(0, 5));
+console.log('========================');
+
 if (!this.salesData || this.salesData.length === 0) {
-throw new Error('Sales data is empty or undefined');
+throw new Error('Sales data is empty');
 }
 if (!this.trafficData || this.trafficData.length === 0) {
-throw new Error('Traffic data is empty or undefined');
+throw new Error('Traffic data is empty');
 }
 if (!this.inventoryData || this.inventoryData.length === 0) {
-throw new Error('Inventory data is empty or undefined');
+throw new Error('Inventory data is empty');
 }
 
 const trafficMap = new Map();
@@ -1151,28 +1055,55 @@ console.log(`Processing ${this.salesData.length} sales rows...`);
 this.salesData.forEach((salesRow, index) => {
 try {
 if (!salesRow || !salesRow.ASIN) return;
-
 const asin = String(salesRow.ASIN);
 const trafficRow = trafficMap.get(asin) || {};
 const inventoryRow = inventoryMap.get(asin) || {};
 
-const orderedUnits = this.parseNum(salesRow['Ordered units']) || 0;
-const orderedRevenue = this.parseNum(salesRow['Ordered revenue']) || 0;
+// 🇺🇸🇬🇧 MULTI-FORMAT COLUMN SUPPORT
+const orderedUnits = this.parseNum(
+salesRow['Ordered units'] || // UK format
+salesRow['Ordered Units'] // US format
+) || 0;
 
-// Skip rows with no units and no revenue
+const orderedRevenue = this.parseNum(
+salesRow['Ordered revenue'] || // UK format
+salesRow['Ordered Revenue'] // US format
+) || 0;
+
 if (orderedUnits === 0 && orderedRevenue === 0) return;
 
-const dispatchedRevenue = this.parseNum(salesRow['Dispatched revenue']) || 0;
-const dispatchedCOGS = this.parseNum(salesRow['Dispatched COGS']) || 0;
-const pageViews = this.parseNum(trafficRow['Featured offer page views']) || 0;
+const dispatchedRevenue = this.parseNum(
+salesRow['Dispatched revenue'] || // UK format
+salesRow['Shipped Revenue'] // US format
+) || 0;
 
-// CALCULATE LAST PERIOD ACTUALS FROM CURRENT + YoY%
-const orderedRevenueYoYRaw = this.parseYoY(salesRow['Ordered Revenue – Same Period Last Year (%)']);
-const orderedUnitsYoYRaw = this.parseYoY(salesRow['Ordered Units – Same Period Last Year (%)']);
-const pageViewsYoYRaw = this.parseYoY(trafficRow['Featured offer page views – Same Period Last Year (%)']);
+const dispatchedCOGS = this.parseNum(
+salesRow['Dispatched COGS'] || // UK format
+salesRow['Shipped COGS'] // US format
+) || 0;
 
-// Calculate last period actuals: Current = Last × (1 + YoY%)
-// Therefore: Last = Current ÷ (1 + YoY%)
+// 🚦 FIX: Traffic column case sensitivity (US = capitals, UK = lowercase)
+const pageViews = this.parseNum(
+trafficRow['Featured Offer Page Views'] || // US format (capitals)
+trafficRow['Featured offer page views'] // UK format (lowercase)
+) || 0;
+
+// 📊 YoY SUPPORT - Multiple Punctuation Formats
+const orderedRevenueYoYRaw = this.parseYoY(
+salesRow['Ordered Revenue – Same Period Last Year (%)'] || // UK (en dash)
+salesRow['Ordered Revenue - Same Period Last Year (%)'] // US (hyphen)
+);
+
+const orderedUnitsYoYRaw = this.parseYoY(
+salesRow['Ordered Units – Same Period Last Year (%)'] || // UK (en dash)
+salesRow['Ordered Units - Same Period Last Year (%)'] // US (hyphen)
+);
+
+const pageViewsYoYRaw = this.parseYoY(
+trafficRow['Featured offer page views – Same Period Last Year (%)'] || // UK
+trafficRow['Featured offer page views - Same Period Last Year (%)'] // US
+);
+
 let lastPeriodRevenue = null;
 let lastPeriodUnits = null;
 let lastPeriodPageViews = null;
@@ -1194,25 +1125,22 @@ if (pageViewsYoYRaw !== null && pageViews > 0) {
 lastPeriodPageViews = pageViews / (1 + (pageViewsYoYRaw / 100));
 calculatedPageViewsYoY = ((pageViews - lastPeriodPageViews) / lastPeriodPageViews) * 100;
 }
-const leadTime = this.parseNum(inventoryRow['Overall Vendor Lead Time (days)']) || 0;
 
-// Check multiple possible column name variations for inventory data
+// 📦 INVENTORY COLUMN VARIATIONS
 const vendorLeadTime = this.parseNum(
-inventoryRow['Overall Vendor Lead Time (days)'] || 
+inventoryRow['Overall Vendor Lead Time (days)'] ||
 inventoryRow['Vendor Lead Time (days)'] ||
 inventoryRow['Lead Time (days)'] ||
 0
 );
 
-// Check multiple possible column name variations for sellable units
 const sellableUnits = this.parseNum(
-inventoryRow['Sellable On Hand Units'] || 
+inventoryRow['Sellable On Hand Units'] ||
 inventoryRow['Sellable On-Hand Units'] ||
 inventoryRow['Sellable Inventory Units'] ||
 0
 );
 
-// Check multiple possible column name variations for aged 90+ units  
 const aged90Units = this.parseNum(
 inventoryRow['Aged 90+ Days Sellable Units'] ||
 inventoryRow['Aged 90+ Days Sellable Inventory'] ||
@@ -1220,51 +1148,31 @@ inventoryRow['90+ Days Sellable Units'] ||
 0
 );
 
-// Validate inventory calculations
-if (sellableUnits < 0 || aged90Units < 0 || vendorLeadTime < 0) {
-console.warn(`Invalid inventory data for ASIN ${asin}:`, {sellableUnits, aged90Units, vendorLeadTime});
-}
-
-// Calculate metrics using proper variable names
 const conversionRate = pageViews > 0 ? (orderedUnits / pageViews) * 100 : 0;
 const dailySales = orderedRevenue / this.daysInPeriod;
 const netPPM = dispatchedRevenue > 0 ? ((dispatchedRevenue - dispatchedCOGS) / dispatchedRevenue) * 100 : 0;
 const aged90Percent = sellableUnits > 0 ? (aged90Units / sellableUnits) * 100 : 0;
 
-// Validate calculated metrics for sanity
-if (conversionRate > 100) {
-console.warn(`Unrealistic conversion rate for ASIN ${asin}: ${conversionRate.toFixed(1)}%`);
-}
-if (netPPM < -100 || netPPM > 100) {
-console.warn(`Extreme Net PPM for ASIN ${asin}: ${netPPM.toFixed(1)}%`);
-}
-if (aged90Percent > 100) {
-console.warn(`Invalid aged inventory % for ASIN ${asin}: ${aged90Percent.toFixed(1)}%`);
-}
+const dispatchedUnitsYoY = this.parseYoY(
+salesRow['Dispatched Units – Same Period Last Year (%)'] ||
+salesRow['Dispatched Units - Same Period Last Year (%)'] ||
+salesRow['Shipped Units – Same Period Last Year (%)'] ||
+salesRow['Shipped Units - Same Period Last Year (%)']
+);
 
-// Get other YoY values for completeness
-const dispatchedUnitsYoY = this.parseYoY(salesRow['Dispatched Units – Same Period Last Year (%)']);
-const vendorLeadTimeYoY = this.parseYoY(inventoryRow['Overall Vendor Lead Time (days) – Same Period Last Year (%)']);
-const aged90YoY = this.parseYoY(inventoryRow['Aged 90+ Days Sellable Units – Same Period Last Year (%)']);
+const vendorLeadTimeYoY = this.parseYoY(
+inventoryRow['Overall Vendor Lead Time (days) – Same Period Last Year (%)'] ||
+inventoryRow['Overall Vendor Lead Time (days) - Same Period Last Year (%)']
+);
 
-// Log calculation verification for first 5 products
-if (index < 5 && lastPeriodRevenue !== null) {
-console.log(`\n🧮 CALCULATION VERIFICATION - ${salesRow['Product title']}`);
-console.log(`  Current Revenue: £${orderedRevenue.toLocaleString()}`);
-console.log(`  YoY Raw from file: ${orderedRevenueYoYRaw}%`);
-console.log(`  Calculated Last Period: £${lastPeriodRevenue.toFixed(2)}`);
-console.log(`  Verified YoY: ${calculatedRevenueYoY.toFixed(2)}%`);
-console.log(`  Match: ${Math.abs(calculatedRevenueYoY - orderedRevenueYoYRaw) < 0.01 ? '✅ PERFECT' : '❌ MISMATCH'}`);
-}
-
-// Ensure merged array exists before pushing
-if (!merged) {
-throw new Error('Merged array is undefined');
-}
+const aged90YoY = this.parseYoY(
+inventoryRow['Aged 90+ Days Sellable Units – Same Period Last Year (%)'] ||
+inventoryRow['Aged 90+ Days Sellable Units - Same Period Last Year (%)']
+);
 
 merged.push({
 asin: asin,
-title: salesRow['Product title'] || '',
+title: salesRow['Product title'] || salesRow['Product Title'] || '', // US/UK support
 brand: salesRow['Brand'] || '',
 orderedUnits: orderedUnits,
 orderedRevenue: orderedRevenue,
@@ -1278,24 +1186,23 @@ leadTime: vendorLeadTime,
 sellableUnits: sellableUnits,
 aged90Units: aged90Units,
 aged90Percent: aged90Percent,
-// Use calculated YoY values based on reverse-engineered last period actuals
 orderedRevenueYoY: calculatedRevenueYoY,
 orderedUnitsYoY: calculatedUnitsYoY,
 dispatchedUnitsYoY: dispatchedUnitsYoY,
 pageViewsYoY: calculatedPageViewsYoY,
 leadTimeYoY: vendorLeadTimeYoY,
 aged90YoY: aged90YoY,
-// Store last period actuals for reference
 lastPeriodRevenue: lastPeriodRevenue,
 lastPeriodUnits: lastPeriodUnits,
 lastPeriodPageViews: lastPeriodPageViews
 });
+
 } catch (rowError) {
 console.warn(`Row processing error at index ${index}:`, rowError);
 }
 });
 
-console.log(`Successfully processed ${merged.length} products`);
+console.log(`✅ Successfully processed ${merged.length} products with US/UK column support`);
 return merged;
 } catch (error) {
 console.error('Merge data error:', error);
@@ -1307,7 +1214,14 @@ updateDashboard() {
 try {
 const totals = this.calculateTotals();
 
-// Update metric cards
+const lowStockCount = this.processedData.filter(item => {
+const dailySalesUnits = item.orderedUnits / this.daysInPeriod;
+if (dailySalesUnits <= 0) return false;
+const stockDays = item.sellableUnits / dailySalesUnits;
+const riskDays = stockDays - item.leadTime;
+return riskDays <= 14;
+}).length;
+
 this.updateElement('orderedUnits', totals.orderedUnits.toLocaleString());
 this.updateElement('orderedRevenue', '£' + Math.round(totals.orderedRevenue).toLocaleString());
 this.updateElement('pageViews', totals.pageViews.toLocaleString());
@@ -1316,8 +1230,8 @@ this.updateElement('dailySales', '£' + Math.round(totals.dailySales).toLocaleSt
 this.updateElement('netPPM', totals.netPPM.toFixed(1) + '%');
 this.updateElement('vendorLeadTime', totals.leadTime.toFixed(0) + ' days');
 this.updateElement('aged90Percent', totals.aged90Percent.toFixed(1) + '%');
+this.updateElement('lowStockTitles', lowStockCount.toString());
 
-// Update YoY changes
 this.updateYoYChange('orderedUnitsChange', totals.orderedUnitsYoY);
 this.updateYoYChange('orderedRevenueChange', totals.orderedRevenueYoY);
 this.updateYoYChange('pageViewsChange', totals.pageViewsYoY);
@@ -1326,6 +1240,7 @@ this.updateYoYChange('dailySalesChange', totals.orderedRevenueYoY);
 this.updateYoYChange('netPPMChange', totals.netPPMYoY);
 this.updateYoYChange('vendorLeadTimeChange', totals.leadTimeYoY);
 this.updateYoYChange('aged90PercentChange', totals.aged90YoY);
+
 } catch (error) {
 console.error('Dashboard update error:', error);
 throw error;
@@ -1344,7 +1259,6 @@ leadTimeWeighted: 0,
 leadTimeWeight: 0,
 aged90Units: 0,
 sellableUnits: 0,
-// Add last period totals
 lastPeriodRevenue: 0,
 lastPeriodUnits: 0,
 lastPeriodPageViews: 0
@@ -1366,63 +1280,47 @@ totals.dailySales += item.dailySales;
 totals.aged90Units += item.aged90Units;
 totals.sellableUnits += item.sellableUnits;
 
-// Add last period actuals to totals
 if (item.lastPeriodRevenue) totals.lastPeriodRevenue += item.lastPeriodRevenue;
 if (item.lastPeriodUnits) totals.lastPeriodUnits += item.lastPeriodUnits;
 if (item.lastPeriodPageViews) totals.lastPeriodPageViews += item.lastPeriodPageViews;
 
-// Revenue-weighted calculations
 if (item.orderedRevenue > 0) {
 totals.netPPMWeighted += item.netPPM * item.orderedRevenue;
 totals.netPPMWeight += item.orderedRevenue;
-
-totals.leadTimeWeighted += item.leadTime * item.orderedRevenue;
-totals.leadTimeWeight += item.orderedRevenue;
 }
 
-// Collect YoY values for averaging (filter outliers)
+// 🔧 FIX: Use sellable units weighting for lead time (not revenue)
+if (item.sellableUnits > 0) {
+totals.leadTimeWeighted += item.leadTime * item.sellableUnits;
+totals.leadTimeWeight += item.sellableUnits;
+}
+
 if (item.orderedUnitsYoY !== null && Math.abs(item.orderedUnitsYoY) < 1000) {
-if (!yoyValues.orderedUnits) yoyValues.orderedUnits = [];
 yoyValues.orderedUnits.push(item.orderedUnitsYoY);
 }
 if (item.orderedRevenueYoY !== null && Math.abs(item.orderedRevenueYoY) < 1000) {
-if (!yoyValues.orderedRevenue) yoyValues.orderedRevenue = [];
 yoyValues.orderedRevenue.push(item.orderedRevenueYoY);
 }
 if (item.pageViewsYoY !== null && Math.abs(item.pageViewsYoY) < 1000) {
-if (!yoyValues.pageViews) yoyValues.pageViews = [];
 yoyValues.pageViews.push(item.pageViewsYoY);
 }
 if (item.leadTimeYoY !== null && Math.abs(item.leadTimeYoY) < 1000) {
-if (!yoyValues.vendorLeadTime) yoyValues.vendorLeadTime = [];
 yoyValues.vendorLeadTime.push(item.leadTimeYoY);
 }
 if (item.aged90YoY !== null && Math.abs(item.aged90YoY) < 1000) {
-if (!yoyValues.aged90) yoyValues.aged90 = [];
 yoyValues.aged90.push(item.aged90YoY);
 }
 });
 
-// CALCULATE TOTAL YoY USING ACTUAL TOTALS (BULLETPROOF METHOD!)
-const totalRevenueYoY = totals.lastPeriodRevenue > 0 ? 
+const totalRevenueYoY = totals.lastPeriodRevenue > 0 ?
 ((totals.orderedRevenue - totals.lastPeriodRevenue) / totals.lastPeriodRevenue) * 100 : null;
 
-const totalUnitsYoY = totals.lastPeriodUnits > 0 ? 
+const totalUnitsYoY = totals.lastPeriodUnits > 0 ?
 ((totals.orderedUnits - totals.lastPeriodUnits) / totals.lastPeriodUnits) * 100 : null;
 
-const totalPageViewsYoY = totals.lastPeriodPageViews > 0 ? 
+const totalPageViewsYoY = totals.lastPeriodPageViews > 0 ?
 ((totals.pageViews - totals.lastPeriodPageViews) / totals.lastPeriodPageViews) * 100 : null;
 
-// Log total calculation verification
-console.log("\n🧮 TOTAL CALCULATION VERIFICATION:");
-console.log(`Current Total Revenue: £${totals.orderedRevenue.toLocaleString()}`);
-console.log(`Last Period Total Revenue: £${totals.lastPeriodRevenue.toLocaleString()}`);
-console.log(`Calculated Total Revenue YoY: ${totalRevenueYoY ? totalRevenueYoY.toFixed(2) + '%' : 'N/A'}`);
-console.log(`Current Total Units: ${totals.orderedUnits.toLocaleString()}`);
-console.log(`Last Period Total Units: ${totals.lastPeriodUnits.toLocaleString()}`);
-console.log(`Calculated Total Units YoY: ${totalUnitsYoY ? totalUnitsYoY.toFixed(2) + '%' : 'N/A'}`);
-
-// Calculate averages and ratios
 return {
 orderedUnits: totals.orderedUnits,
 orderedRevenue: totals.orderedRevenue,
@@ -1432,12 +1330,11 @@ dailySales: totals.dailySales,
 netPPM: totals.netPPMWeight > 0 ? totals.netPPMWeighted / totals.netPPMWeight : 0,
 leadTime: totals.leadTimeWeight > 0 ? totals.leadTimeWeighted / totals.leadTimeWeight : 0,
 aged90Percent: totals.sellableUnits > 0 ? (totals.aged90Units / totals.sellableUnits) * 100 : 0,
-// Use calculated total YoY (bulletproof method)
 orderedUnitsYoY: totalUnitsYoY,
 orderedRevenueYoY: totalRevenueYoY,
 pageViewsYoY: totalPageViewsYoY,
-conversionRateYoY: totalUnitsYoY, // Approximation using units YoY
-netPPMYoY: totalRevenueYoY, // Approximation using revenue YoY
+conversionRateYoY: totalUnitsYoY,
+netPPMYoY: totalRevenueYoY,
 leadTimeYoY: this.calculateAverage(yoyValues.vendorLeadTime),
 aged90YoY: this.calculateAverage(yoyValues.aged90)
 };
@@ -1478,10 +1375,9 @@ element.className = 'metric-change neutral';
 
 createCharts() {
 this.destroyCharts();
-
 try {
 this.createRevenueChart();
-this.createProductsChart();
+this.createBrandSeriesChart();
 } catch (error) {
 console.error('Chart creation error:', error);
 }
@@ -1553,20 +1449,19 @@ color: 'rgba(0, 127, 95, 0.2)'
 });
 }
 
-createProductsChart() {
-const ctx = document.getElementById('productsChart');
+// 📚 BRAND & SERIES ANALYSIS - The Smart Grouping Feature
+createBrandSeriesChart() {
+const ctx = document.getElementById('brandSeriesChart');
 if (!ctx) return;
 
-const sortedData = [...this.processedData]
-.sort((a, b) => b.orderedUnits - a.orderedUnits)
-.slice(0, 10);
+const brandSeriesData = this.analyzeBrandsAndSeries().slice(0, 10);
 
-this.charts.products = new Chart(ctx, {
+this.charts.brandSeries = new Chart(ctx, {
 type: 'doughnut',
 data: {
-labels: sortedData.map(item => item.title.substring(0, 25) + '...'),
+labels: brandSeriesData.map(item => item.name),
 datasets: [{
-data: sortedData.map(item => item.orderedUnits),
+data: brandSeriesData.map(item => item.totalRevenue),
 backgroundColor: [
 '#007F5F', '#00FF7F', '#005D45', '#40E0D0', '#20B2AA',
 '#48D1CC', '#00CED1', '#5F9EA0', '#4682B4', '#6495ED'
@@ -1583,14 +1478,191 @@ legend: {
 position: 'right',
 labels: {
 color: '#BFC3C9',
-font: {
-family: 'Inter'
-}
+font: { family: 'Inter' }
 }
 }
 }
 }
 });
+}
+
+analyzeBrandsAndSeries() {
+const brandGroups = new Map();
+const seriesGroups = new Map();
+
+console.log('🧠 Starting intelligent brand and series analysis...');
+
+this.processedData.forEach(item => {
+const title = item.title.toLowerCase();
+const brand = item.brand || 'Unknown Publisher';
+
+// Group by brand/publisher
+if (!brandGroups.has(brand)) {
+brandGroups.set(brand, {
+name: brand,
+products: [],
+totalRevenue: 0,
+totalUnits: 0,
+type: 'Brand'
+});
+}
+const brandGroup = brandGroups.get(brand);
+brandGroup.products.push(item);
+brandGroup.totalRevenue += item.orderedRevenue;
+brandGroup.totalUnits += item.orderedUnits;
+
+// 🎯 SMART SERIES DETECTION PATTERNS - EXPANDED
+const seriesPatterns = [
+// 🗺️ Maps Collections
+{ pattern: /ordnance survey|os map|os explorer|os landranger/i, group: 'Ordnance Survey Maps' },
+{ pattern: /street map|road map|tourist map/i, group: 'Street & Road Maps' },
+
+// ✈️ Travel Guides
+{ pattern: /lonely planet/i, group: 'Lonely Planet Guides' },
+{ pattern: /rough guide/i, group: 'Rough Guides Collection' },
+{ pattern: /dk eyewitness|eyewitness travel/i, group: 'DK Eyewitness Guides' },
+{ pattern: /fodor|fodors/i, group: 'Fodor\'s Travel Guides' },
+{ pattern: /frommer/i, group: 'Frommer\'s Guides' },
+{ pattern: /rick steves/i, group: 'Rick Steves Guides' },
+{ pattern: /time out/i, group: 'Time Out Guides' },
+
+// 📚 Educational Series
+{ pattern: /gcse.*?(english|maths|science|history|geography|physics|chemistry|biology)/i, group: 'GCSE Study Collection' },
+{ pattern: /a-level.*?(english|maths|science|history|geography|physics|chemistry|biology)/i, group: 'A-Level Study Collection' },
+{ pattern: /(english|maths|science|history|geography|physics|chemistry|biology).*?gcse/i, group: 'GCSE Study Collection' },
+{ pattern: /(english|maths|science|history|geography|physics|chemistry|biology).*?a-level/i, group: 'A-Level Study Collection' },
+{ pattern: /ks1|ks2|ks3|key stage/i, group: 'Key Stage Education' },
+{ pattern: /revision guide|study guide|exam practice/i, group: 'Study & Revision Guides' },
+
+// 📖 Popular Fiction Series
+{ pattern: /harry potter/i, group: 'Harry Potter Series' },
+{ pattern: /game of thrones|song of ice and fire/i, group: 'Game of Thrones Series' },
+{ pattern: /lord of the rings|hobbit|tolkien/i, group: 'Tolkien Collection' },
+{ pattern: /hunger games/i, group: 'Hunger Games Series' },
+{ pattern: /twilight saga/i, group: 'Twilight Series' },
+{ pattern: /fifty shades|fifty shades of grey/i, group: 'Fifty Shades Series' },
+{ pattern: /divergent/i, group: 'Divergent Series' },
+{ pattern: /maze runner/i, group: 'Maze Runner Series' },
+{ pattern: /diary of a wimpy kid/i, group: 'Diary of a Wimpy Kid' },
+{ pattern: /percy jackson/i, group: 'Percy Jackson Series' },
+
+// 👨‍🍳 Celebrity Chef Collections
+{ pattern: /jamie oliver/i, group: 'Jamie Oliver Cookbooks' },
+{ pattern: /gordon ramsay/i, group: 'Gordon Ramsay Collection' },
+{ pattern: /delia smith/i, group: 'Delia Smith Cookbooks' },
+{ pattern: /nigella lawson/i, group: 'Nigella Lawson Collection' },
+{ pattern: /mary berry/i, group: 'Mary Berry Collection' },
+{ pattern: /jamie olver|thirty minute meals|15 minute meals/i, group: 'Jamie Oliver Cookbooks' },
+
+// 🎨 Children's Collections
+{ pattern: /gruffalo/i, group: 'Gruffalo Collection' },
+{ pattern: /peppa pig/i, group: 'Peppa Pig Books' },
+{ pattern: /thomas the tank|thomas & friends/i, group: 'Thomas the Tank Engine' },
+{ pattern: /roald dahl/i, group: 'Roald Dahl Collection' },
+{ pattern: /julia donaldson/i, group: 'Julia Donaldson Books' },
+{ pattern: /ladybird books|ladybird classics/i, group: 'Ladybird Books' },
+{ pattern: /usborne/i, group: 'Usborne Books' },
+
+// 📅 Time-Based Collections
+{ pattern: /\d{4} edition|\d{4} annual|yearbook \d{4}/i, group: 'Annual Editions' },
+{ pattern: /calendar \d{4}|\d{4} calendar/i, group: 'Calendar Collection' },
+{ pattern: /diary \d{4}|\d{4} diary/i, group: 'Diary Collection' },
+{ pattern: /planner \d{4}|\d{4} planner/i, group: 'Planner Collection' },
+
+// 📚 Multi-Volume Series
+{ pattern: /volume \d+|vol\. \d+|book \d+|part \d+/i, group: 'Multi-Volume Collection' },
+{ pattern: /series \d+|season \d+/i, group: 'Series Collection' },
+{ pattern: /complete works|collected works/i, group: 'Complete Works Collection' },
+
+// 🎨 Art & Design Collections
+{ pattern: /art history|history of art/i, group: 'Art History Collection' },
+{ pattern: /design principles|graphic design/i, group: 'Design Collection' },
+{ pattern: /photography|photographer/i, group: 'Photography Collection' },
+
+// 🏃‍♂️ Health & Fitness Collections
+{ pattern: /yoga|pilates|meditation/i, group: 'Wellness Collection' },
+{ pattern: /fitness|workout|exercise/i, group: 'Fitness Collection' },
+{ pattern: /diet|nutrition|healthy eating/i, group: 'Diet & Nutrition' },
+
+// 💼 Business Collections
+{ pattern: /business strategy|management|leadership/i, group: 'Business Strategy Collection' },
+{ pattern: /marketing|sales|advertising/i, group: 'Marketing Collection' },
+{ pattern: /finance|accounting|investment/i, group: 'Finance Collection' },
+
+// 🏠 Lifestyle Collections
+{ pattern: /home improvement|diy|home decoration/i, group: 'Home Improvement Collection' },
+{ pattern: /gardening|garden design|plants/i, group: 'Gardening Collection' },
+{ pattern: /crafts|crafting|handmade/i, group: 'Crafts Collection' },
+
+// 🎵 Music Collections
+{ pattern: /piano|guitar|violin|music theory/i, group: 'Music Education' },
+{ pattern: /songbook|sheet music/i, group: 'Sheet Music Collection' },
+
+// 🌍 Language Learning
+{ pattern: /learn (french|spanish|german|italian|chinese|japanese|portuguese)/i, group: 'Language Learning' },
+{ pattern: /(french|spanish|german|italian|chinese|japanese|portuguese) language/i, group: 'Language Learning' },
+
+// 🔬 Science Collections
+{ pattern: /science experiments|lab manual/i, group: 'Science Education' },
+{ pattern: /physics|chemistry|biology textbook/i, group: 'Science Textbooks' },
+
+// 🏛️ History Collections
+{ pattern: /world war|wwii|ww2|world war ii/i, group: 'World War History' },
+{ pattern: /ancient history|roman|greek|egypt/i, group: 'Ancient History' },
+{ pattern: /british history|english history/i, group: 'British History' }
+];
+
+// Check for series patterns
+for (const pattern of seriesPatterns) {
+if (pattern.pattern.test(title)) {
+if (!seriesGroups.has(pattern.group)) {
+seriesGroups.set(pattern.group, {
+name: pattern.group,
+products: [],
+totalRevenue: 0,
+totalUnits: 0,
+type: 'Series'
+});
+}
+const seriesGroup = seriesGroups.get(pattern.group);
+seriesGroup.products.push(item);
+seriesGroup.totalRevenue += item.orderedRevenue;
+seriesGroup.totalUnits += item.orderedUnits;
+break; // Only match first pattern
+}
+}
+});
+
+// Combine and filter significant groups
+const allGroups = [];
+
+// Add significant brand groups (£500+ revenue, 2+ products)
+brandGroups.forEach(group => {
+if (group.totalRevenue >= 500 && group.products.length > 1) {
+allGroups.push({
+...group,
+displayName: `${group.name} (${group.products.length} titles)`,
+avgRevenue: group.totalRevenue / group.products.length
+});
+}
+});
+
+// Add series groups (2+ products)
+seriesGroups.forEach(group => {
+if (group.products.length > 1) {
+allGroups.push({
+...group,
+displayName: `${group.name} (${group.products.length} titles)`,
+avgRevenue: group.totalRevenue / group.products.length
+});
+}
+});
+
+// Sort by total revenue
+allGroups.sort((a, b) => b.totalRevenue - a.totalRevenue);
+
+console.log(`✅ Found ${allGroups.length} significant brand/series groupings`);
+return allGroups.slice(0, 20); // Top 20 groups
 }
 
 populateTable() {
@@ -1601,44 +1673,66 @@ tbody.innerHTML = '';
 
 const sortedData = [...this.processedData]
 .sort((a, b) => b.orderedRevenue - a.orderedRevenue)
-.slice(0, 50); // Limit to top 50
+.slice(0, 50);
 
 sortedData.forEach(item => {
 const row = tbody.insertRow();
+
+const dailySalesUnits = item.orderedUnits / this.daysInPeriod;
+const stockDays = dailySalesUnits > 0 ? item.sellableUnits / dailySalesUnits : null;
+const riskDays = stockDays !== null ? stockDays - item.leadTime : null;
+
+let stockDisplay = 'N/A';
+let stockColor = '#BFC3C9';
+
+if (stockDays !== null) {
+stockDisplay = stockDays.toFixed(0) + ' days';
+
+if (riskDays <= 0) {
+stockColor = '#FF6B6B';
+} else if (riskDays <= 7) {
+stockColor = '#FFA500';
+} else if (riskDays <= 14) {
+stockColor = '#FFD700';
+} else {
+stockColor = '#90EE90';
+}
+}
+
 row.innerHTML = `
-                       <td>${item.asin}</td>
-                       <td>${item.title}</td>
-                       <td>${item.orderedUnits.toLocaleString()}</td>
-                       <td>£${item.orderedRevenue.toLocaleString()}</td>
-                       <td>${item.pageViews.toLocaleString()}</td>
-                       <td>${item.conversionRate.toFixed(2)}%</td>
-                       <td>£${item.dailySales.toFixed(0)}</td>
-                       <td>${item.leadTime.toFixed(0)}</td>
-                       <td>${item.aged90Percent.toFixed(1)}%</td>
-                       <td>${item.netPPM.toFixed(1)}%</td>
-                   `;
+<td>${item.asin}</td>
+<td>${item.title}</td>
+<td>${item.orderedUnits.toLocaleString()}</td>
+<td>£${item.orderedRevenue.toLocaleString()}</td>
+<td>${item.pageViews.toLocaleString()}</td>
+<td>${item.conversionRate.toFixed(2)}%</td>
+<td>£${item.dailySales.toFixed(0)}</td>
+<td>${item.leadTime.toFixed(0)}</td>
+<td>${item.aged90Percent.toFixed(1)}%</td>
+<td style="color: ${stockColor}; font-weight: bold;">${stockDisplay}</td>
+<td>${item.netPPM.toFixed(1)}%</td>
+`;
 });
 }
 
 populateInsights() {
 this.populateTopConverting();
 this.populateRevenueRecovery();
-this.populateTopRevenue();
+this.populateBrandSeriesInsights();
 }
 
 populateTopConverting() {
-// Calculate adaptive threshold based on portfolio size
 const totalUnits = this.processedData.reduce((sum, item) => sum + item.orderedUnits, 0);
 const adaptiveThreshold = this.calculateAdaptiveThreshold(totalUnits);
 const avgConversion = this.processedData.reduce((sum, item) => sum + item.conversionRate, 0) / this.processedData.length;
-const conversionThreshold = avgConversion * 1.15; // 15% above average
+const conversionThreshold = avgConversion * 1.15;
 
 const topConverting = this.processedData
-.filter(item => 
-item.conversionRate > conversionThreshold && 
-item.conversionRate < 25 && // Under 25% conversion (realistic)
-item.orderedUnits >= adaptiveThreshold && // Adaptive unit threshold for scale
-item.pageViews > 0 // Has actual traffic
+.filter(item =>
+item.conversionRate > conversionThreshold &&
+item.conversionRate < 25 &&
+item.orderedUnits >= adaptiveThreshold &&
+item.pageViews > 0
 )
 .sort((a, b) => b.conversionRate - a.conversionRate)
 .slice(0, 20);
@@ -1647,7 +1741,6 @@ const list = document.getElementById('topConvertingList');
 if (list) {
 list.innerHTML = '';
 
-// Add explanation of adaptive threshold
 const explanation = document.createElement('li');
 explanation.style.fontStyle = 'italic';
 explanation.style.color = '#666';
@@ -1671,13 +1764,13 @@ list.appendChild(li);
 
 calculateAdaptiveThreshold(totalUnits) {
 if (totalUnits > 50000) {
-return Math.max(totalUnits * 0.001, 50); // 0.1% or 50 units minimum for very large portfolios
+return Math.max(totalUnits * 0.001, 50);
 } else if (totalUnits > 10000) {
-return Math.max(totalUnits * 0.005, 25); // 0.5% or 25 units minimum for large portfolios  
+return Math.max(totalUnits * 0.005, 25);
 } else if (totalUnits > 1000) {
-return Math.max(totalUnits * 0.01, 10); // 1% or 10 units minimum for medium portfolios
+return Math.max(totalUnits * 0.01, 10);
 } else {
-return Math.max(totalUnits * 0.02, 5); // 2% or 5 units minimum for small portfolios
+return Math.max(totalUnits * 0.02, 5);
 }
 }
 
@@ -1685,24 +1778,17 @@ populateRevenueRecovery() {
 const avgConversion = this.processedData.reduce((sum, item) => sum + item.conversionRate, 0) / this.processedData.length;
 const totalRevenue = this.processedData.reduce((sum, item) => sum + item.orderedRevenue, 0);
 
-// REVENUE RECOVERY MATRIX - Focus on high-impact opportunities
 let recoveryOpportunities = this.processedData
-.filter(item => 
-item.orderedRevenue >= 1000 && // Minimum £1k revenue for impact
-item.pageViews > 0 // Has traffic to optimize
+.filter(item =>
+item.orderedRevenue >= 1000 &&
+item.pageViews > 0
 )
 .map(item => {
-// Distance from average conversion (normalized 0-1)
 const conversionGap = Math.max(0, avgConversion - item.conversionRate);
 const conversionGapNormalized = conversionGap / avgConversion;
-
-// Revenue impact (% of total portfolio)
 const revenueImpact = (item.orderedRevenue / totalRevenue) * 100;
-
-// Aged inventory score (0-1)
 const agedInventoryScore = item.aged90Percent / 100;
 
-// Calculate days of stock remaining
 const dailySalesUnits = item.orderedUnits / this.daysInPeriod;
 const stockDays = dailySalesUnits > 0 ? item.sellableUnits / dailySalesUnits : null;
 const riskDays = stockDays !== null ? stockDays - item.leadTime : null;
@@ -1712,7 +1798,6 @@ riskDays <= 7 ? 'HIGH' :
 riskDays <= 14 ? 'MEDIUM' : 'LOW'
 ) : 'UNKNOWN';
 
-// MATRIX SCORE: Prioritizes high-revenue products with conversion gaps OR aged inventory
 const matrixScore = (conversionGapNormalized * revenueImpact) + (agedInventoryScore * revenueImpact);
 
 return {
@@ -1727,13 +1812,12 @@ stockRisk
 };
 })
 .sort((a, b) => b.matrixScore - a.matrixScore)
-.slice(0, 15); // Top 15 opportunities
+.slice(0, 15);
 
-// Fallback if no high-impact opportunities
 if (recoveryOpportunities.length < 3) {
 recoveryOpportunities = this.processedData
-.filter(item => 
-item.orderedRevenue >= 500 && 
+.filter(item =>
+item.orderedRevenue >= 500 &&
 item.conversionRate < avgConversion
 )
 .sort((a, b) => b.orderedRevenue - a.orderedRevenue)
@@ -1750,7 +1834,6 @@ const list = document.getElementById('revenueRecoveryList');
 if (list) {
 list.innerHTML = '';
 
-// Add explanation header
 const explanation = document.createElement('li');
 explanation.style.fontStyle = 'italic';
 explanation.style.color = '#666';
@@ -1760,23 +1843,23 @@ list.appendChild(explanation);
 recoveryOpportunities.forEach(item => {
 const li = document.createElement('li');
 
-const stockInfo = item.stockDays !== null ? 
-`${item.stockDays.toFixed(0)} days stock` : 
+const stockInfo = item.stockDays !== null ?
+`${item.stockDays.toFixed(0)} days stock` :
 'Stock data unavailable';
 
 const riskColor = {
 'CRITICAL': '#FF6B6B',
-'HIGH': '#FFA500', 
+'HIGH': '#FFA500',
 'MEDIUM': '#FFD700',
 'LOW': '#90EE90',
 'UNKNOWN': '#BFC3C9'
 }[item.stockRisk];
 
 li.innerHTML = `<strong>${item.title}</strong><br>
-                           £${item.orderedRevenue.toLocaleString()} (${item.revenueImpact.toFixed(1)}% of portfolio) | 
-                           ${item.conversionRate.toFixed(2)}% CVR |
-                           <span style="color: #e74c3c; font-weight: bold;">${item.aged90Percent.toFixed(1)}% aged</span> |
-                           <span style="color: ${riskColor}; font-weight: bold;">${stockInfo}</span>`;
+£${item.orderedRevenue.toLocaleString()} (${item.revenueImpact.toFixed(1)}% of portfolio) |
+${item.conversionRate.toFixed(2)}% CVR |
+<span style="color: #e74c3c; font-weight: bold;">${item.aged90Percent.toFixed(1)}% aged</span> |
+<span style="color: ${riskColor}; font-weight: bold;">${stockInfo}</span>`;
 list.appendChild(li);
 });
 
@@ -1788,25 +1871,45 @@ list.appendChild(li);
 }
 }
 
-populateTopRevenue() {
-const topRevenue = this.processedData
-.sort((a, b) => b.orderedRevenue - a.orderedRevenue)
-.slice(0, 20);
+populateBrandSeriesInsights() {
+const brandSeriesData = this.analyzeBrandsAndSeries();
+const list = document.getElementById('brandSeriesList');
 
-const list = document.getElementById('topRevenueList');
-if (list) {
+if (!list) return;
+
 list.innerHTML = '';
-topRevenue.forEach(item => {
+
+if (brandSeriesData.length === 0) {
 const li = document.createElement('li');
-li.textContent = `${item.title} - £${item.orderedRevenue.toLocaleString()}`;
+li.textContent = 'No significant brand or series groupings identified';
+list.appendChild(li);
+return;
+}
+
+brandSeriesData.slice(0, 15).forEach(group => {
+const li = document.createElement('li');
+li.innerHTML = `<strong>${group.displayName}</strong><br>
+Total Revenue: £${group.totalRevenue.toLocaleString()} |
+Average: £${group.avgRevenue.toFixed(0)} |
+Units: ${group.totalUnits.toLocaleString()}`;
 list.appendChild(li);
 });
-}
 }
 
 exportExcel() {
 try {
-const ws = XLSX.utils.json_to_sheet(this.processedData.map(item => ({
+// Main data sheet
+const mainData = this.processedData.map(item => {
+const dailySalesUnits = item.orderedUnits / this.daysInPeriod;
+const stockDays = dailySalesUnits > 0 ? item.sellableUnits / dailySalesUnits : null;
+const riskDays = stockDays !== null ? stockDays - item.leadTime : null;
+const stockRisk = riskDays !== null ? (
+riskDays <= 0 ? 'CRITICAL' :
+riskDays <= 7 ? 'HIGH' :
+riskDays <= 14 ? 'MEDIUM' : 'LOW'
+) : 'UNKNOWN';
+
+return {
 'ASIN': item.asin,
 'Product Title': item.title,
 'Brand': item.brand,
@@ -1818,14 +1921,34 @@ const ws = XLSX.utils.json_to_sheet(this.processedData.map(item => ({
 'Net PPM %': item.netPPM.toFixed(2),
 'Lead Time Days': item.leadTime.toFixed(0),
 '90+ Days Inventory %': item.aged90Percent.toFixed(1),
+'Days of Stock': stockDays !== null ? stockDays.toFixed(0) : 'N/A',
+'Stock Risk Level': stockRisk,
 'Ordered Revenue YoY %': item.orderedRevenueYoY ? item.orderedRevenueYoY.toFixed(1) : 'N/A',
 'Ordered Units YoY %': item.orderedUnitsYoY ? item.orderedUnitsYoY.toFixed(1) : 'N/A'
-})));
+};
+});
+
+// Brand/Series insights sheet
+const brandSeriesData = this.analyzeBrandsAndSeries().map(group => ({
+'Group Name': group.name,
+'Type': group.type,
+'Total Revenue': group.totalRevenue,
+'Total Units': group.totalUnits,
+'Average Revenue': group.avgRevenue.toFixed(2),
+'Product Count': group.products.length
+}));
 
 const wb = XLSX.utils.book_new();
-XLSX.utils.book_append_sheet(wb, ws, 'Vendor Performance Report');
 
-const fileName = 'vendor_performance_report_' + new Date().toISOString().split('T')[0] + '.xlsx';
+// Add main data sheet
+const ws1 = XLSX.utils.json_to_sheet(mainData);
+XLSX.utils.book_append_sheet(wb, ws1, 'Product Performance');
+
+// Add brand/series insights sheet
+const ws2 = XLSX.utils.json_to_sheet(brandSeriesData);
+XLSX.utils.book_append_sheet(wb, ws2, 'Brand & Series Analysis');
+
+const fileName = 'zon_analytics_report_' + new Date().toISOString().split('T')[0] + '.xlsx';
 XLSX.writeFile(wb, fileName);
 
 this.showSuccess('Excel report exported successfully!');
@@ -1837,7 +1960,17 @@ this.showError('Export failed: ' + error.message);
 
 exportCSV() {
 try {
-const csvData = this.processedData.map(item => ({
+const csvData = this.processedData.map(item => {
+const dailySalesUnits = item.orderedUnits / this.daysInPeriod;
+const stockDays = dailySalesUnits > 0 ? item.sellableUnits / dailySalesUnits : null;
+const riskDays = stockDays !== null ? stockDays - item.leadTime : null;
+const stockRisk = riskDays !== null ? (
+riskDays <= 0 ? 'CRITICAL' :
+riskDays <= 7 ? 'HIGH' :
+riskDays <= 14 ? 'MEDIUM' : 'LOW'
+) : 'UNKNOWN';
+
+return {
 'ASIN': item.asin,
 'Product Title': item.title,
 'Brand': item.brand,
@@ -1849,16 +1982,19 @@ const csvData = this.processedData.map(item => ({
 'Net PPM %': item.netPPM.toFixed(2),
 'Lead Time Days': item.leadTime.toFixed(0),
 '90+ Days Inventory %': item.aged90Percent.toFixed(1),
+'Days of Stock': stockDays !== null ? stockDays.toFixed(0) : 'N/A',
+'Stock Risk Level': stockRisk,
 'Ordered Revenue YoY %': item.orderedRevenueYoY ? item.orderedRevenueYoY.toFixed(1) : 'N/A',
 'Ordered Units YoY %': item.orderedUnitsYoY ? item.orderedUnitsYoY.toFixed(1) : 'N/A'
-}));
+};
+});
 
 const csv = Papa.unparse(csvData);
 const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
 const link = document.createElement('a');
 const url = URL.createObjectURL(blob);
 link.setAttribute('href', url);
-link.setAttribute('download', 'vendor_performance_report_' + new Date().toISOString().split('T')[0] + '.csv');
+link.setAttribute('download', 'zon_analytics_report_' + new Date().toISOString().split('T')[0] + '.csv');
 link.style.visibility = 'hidden';
 document.body.appendChild(link);
 link.click();
